@@ -15,8 +15,8 @@ func TestBuilder(t *testing.T) {
 	b.Exit()
 	bc := b.BC()
 
-	expected := Uint64(3)
-	if bc[1][2] != Uint64(3) {
+	expected := ui64(3)
+	if bc[1][2] != ui64(3) {
 		t.Errorf("expected jump offset %s got %s", expected, bc[1][2])
 	}
 

@@ -1,6 +1,9 @@
 package protovm
 
-import "fmt"
+import (
+	"fmt"
+	"unsafe"
+)
 
 // An easier way to construct bytecode format programmatically, with labeled jumps to negate
 // annoying hard code address requirement when constructing manually.
@@ -10,6 +13,9 @@ type (
 		// pass to update with offsets
 		labels  map[string]uint64
 		rLabels map[uint64]string
+
+		// comments
+		comments map[uint64]string
 
 		// map of label to instruction and op positions that require updating
 		labelledInsts map[string][]pos
@@ -43,6 +49,7 @@ func NewBuilder() *Builder {
 	b.bc = nil
 	b.labels = make(map[string]uint64)
 	b.rLabels = make(map[uint64]string)
+	b.comments = make(map[uint64]string)
 	b.labelledInsts = make(map[string][]pos)
 	return &b
 }
@@ -69,6 +76,10 @@ func (b *Builder) Label(l string) {
 	b.rLabels[uint64(len(b.asm))] = l
 }
 
+func (b *Builder) Comment(c string) {
+	b.comments[uint64(len(b.asm))] = c
+}
+
 func (b *Builder) Exit() {
 	b.asm = append(b.asm, line{o: Exit})
 }
@@ -76,8 +87,8 @@ func (b *Builder) Exit() {
 func (b *Builder) BC() ByteCode {
 	for _, v := range b.asm {
 		inst := Inst{}
-		inst[0] = Op(v.o)
-		inst[1] = F(v.f)
+		inst[0] = op(v.o)
+		inst[1] = f(v.f)
 		b.operand(v.x, &inst, 2)
 		b.operand(v.y, &inst, 3)
 		b.operand(v.z, &inst, 4)
@@ -88,7 +99,7 @@ func (b *Builder) BC() ByteCode {
 			panic(fmt.Sprintf("label %s not found", l))
 		}
 		for _, pos := range positions {
-			b.bc[pos.i][pos.j] = Uint64(b.labels[l])
+			b.bc[pos.i][pos.j] = ui64(b.labels[l])
 		}
 	}
 	bc := b.bc
@@ -107,15 +118,15 @@ func (b *Builder) operand(a interface{}, inst *Inst, i int) {
 		}
 		b.labelledInsts[a] = append(b.labelledInsts[a], pos{len(b.bc), i})
 	case R:
-		inst[i] = Uint64(uint64(a))
+		inst[i] = ui64(uint64(a))
 	case uint64:
-		inst[i] = Uint64(a)
+		inst[i] = ui64(a)
 	case int64:
-		inst[i] = Int64(a)
+		inst[i] = i64(a)
 	case float64:
-		inst[i] = Float64(a)
+		inst[i] = f64(a)
 	case bool:
-		inst[i] = Boolean(a)
+		inst[i] = boolean(a)
 	}
 }
 
@@ -138,7 +149,30 @@ func (b *Builder) String() string {
 		if label, ok := b.rLabels[uint64(l)]; ok {
 			s += fmt.Sprintf("%s:\n", label)
 		}
-		s += fmt.Sprintf("%10d %v %v %v %v %v\n", l, i.o, i.f, i.x, i.y, i.z)
+		s += fmt.Sprintf("%10d %-8v %-8v %-8v %-8v %-8v //%s\n", l, i.o, i.f, i.x, i.y, i.z, b.comments[uint64(l)])
 	}
 	return s
+}
+
+
+func op(v Opcode) [8]byte {
+	return ui64(uint64(v))
+}
+func f(v Funct) [8]byte {
+	return ui64(uint64(v))
+}
+func r(v Reg) [8]byte {
+	return ui64(uint64(v))
+}
+func ui64(v uint64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func i64(v int64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func f64(v float64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func boolean(v bool) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
 }

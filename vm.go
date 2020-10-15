@@ -435,7 +435,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 		case Exit:
 			return nil
 		default:
-			return fmt.Errorf("unhandled Op %b", i[0])
+			return fmt.Errorf("unhandled op %b", i[0])
 		}
 		vm.pc++
 	}

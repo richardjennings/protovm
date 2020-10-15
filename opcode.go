@@ -1,7 +1,5 @@
 package protovm
 
-import "unsafe"
-
 // Operations
 type Opcode uint64
 type Funct uint64
@@ -116,24 +114,3 @@ func (o Opcode) String() string {
 	panic("opcode string not found")
 }
 
-func Op(v Opcode) [8]byte {
-	return Uint64(uint64(v))
-}
-func F(v Funct) [8]byte {
-	return Uint64(uint64(v))
-}
-func r(v Reg) [8]byte {
-	return Uint64(uint64(v))
-}
-func Uint64(v uint64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Int64(v int64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Float64(v float64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Boolean(v bool) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
