@@ -33,9 +33,9 @@ func NewVm(writer io.Writer, registers int, stack int) *VM {
 func (vm *VM) Exec(bc ByteCode) error {
 	_ = vm.r[len(vm.r) - 1] // bounds check elimination
 
-	var i Inst
+	var i *Inst
 	for {
-		i = bc[vm.pc]
+		i = &bc[vm.pc]
 		switch Opcode(*(*uint64)(unsafe.Pointer(&i[0]))) {
 
 		// boolean
