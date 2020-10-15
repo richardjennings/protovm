@@ -154,7 +154,6 @@ func (b *Builder) String() string {
 	return s
 }
 
-
 func op(v Opcode) [8]byte {
 	return ui64(uint64(v))
 }

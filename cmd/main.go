@@ -13,7 +13,7 @@ func main() {
 	b.Comment("set function arg $n as R0")
 	b.Add(p.Store, p.None, uint64(35), p.R(0))
 	b.Comment("call fib function")
-	b.Add(p.JMP, p.Imm,"fib($n)")
+	b.Add(p.JMP, p.Imm, "fib($n)")
 	b.Label("END")
 	b.Add(p.PrintLn, p.Int, p.R(1))
 	b.Exit()
@@ -63,7 +63,6 @@ func main() {
 	b.Comment("jump to return address")
 	b.Add(p.JMP, p.SP)
 	//
-
 
 	fmt.Println(b)
 

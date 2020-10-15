@@ -113,4 +113,3 @@ func (o Opcode) String() string {
 	}
 	panic("opcode string not found")
 }
-
