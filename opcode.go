@@ -23,20 +23,20 @@ const (
 	SPR
 )
 
-var functs = map[Funct]string {
-	None: "",
-	Imm: "Imm",
-	Int: "Int",
-	ImmI: "ImmI",
-	IImm: "IImm",
+var functs = map[Funct]string{
+	None:  "",
+	Imm:   "Imm",
+	Int:   "Int",
+	ImmI:  "ImmI",
+	IImm:  "IImm",
 	Float: "Float",
-	ImmF: "ImmF",
-	FImm: "FImm",
-	Bool: "Bool",
-	ImmB: "ImmB",
-	Ptr: "Ptr",
-	SP: "SP",
-	SPR: "SPR",
+	ImmF:  "ImmF",
+	FImm:  "FImm",
+	Bool:  "Bool",
+	ImmB:  "ImmB",
+	Ptr:   "Ptr",
+	SP:    "SP",
+	SPR:   "SPR",
 }
 
 var __ [8]byte
@@ -75,31 +75,31 @@ const (
 	Exit
 )
 
-var opcodes = map[Opcode]string {
-	NoOp: "NoOp",
-	And: "And",
-	Or: "Or",
-	Not: "Not",
-	Add: "Add",
-	Sub: "Sub",
-	Mul: "Mul",
-	Quo: "Quo",
-	Pow: "Pow",
-	Rem: "Rem",
-	Eq: "Eq",
-	NEq: "NEq",
-	LT: "LT",
-	LTE: "LTE",
-	GT: "GT",
-	GTE: "GTE",
-	Print: "Print",
+var opcodes = map[Opcode]string{
+	NoOp:    "NoOp",
+	And:     "And",
+	Or:      "Or",
+	Not:     "Not",
+	Add:     "Add",
+	Sub:     "Sub",
+	Mul:     "Mul",
+	Quo:     "Quo",
+	Pow:     "Pow",
+	Rem:     "Rem",
+	Eq:      "Eq",
+	NEq:     "NEq",
+	LT:      "LT",
+	LTE:     "LTE",
+	GT:      "GT",
+	GTE:     "GTE",
+	Print:   "Print",
 	PrintLn: "PrintLn",
-	Load: "Load",
-	Store: "Store",
-	JMP: "JMP",
-	JMPEQ: "JMPEQ",
-	JMPNEQ: "JMPNEQ",
-	Exit: "Exit",
+	Load:    "Load",
+	Store:   "Store",
+	JMP:     "JMP",
+	JMPEQ:   "JMPEQ",
+	JMPNEQ:  "JMPNEQ",
+	Exit:    "Exit",
 }
 
 func (f Funct) String() string {

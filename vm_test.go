@@ -13,7 +13,7 @@ type tcase struct {
 
 func testcase(t tcase) error {
 	buf := bytes.Buffer{}
-	vm := NewVm(&buf, 10, 1000)
+	vm := NewVm(&buf)
 	err := vm.Exec(t.bc)
 	if err != nil {
 		return err
@@ -822,7 +822,7 @@ func Test_GT(t *testing.T) {
 		{
 			// GT ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10),  r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
 				{Op(Store), F(None), Float64(30), r(Reg(2))},
 				{Op(GT), F(ImmF), Float64(20), r(Reg(1)), r(Reg(3))},
 				{Op(GT), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
@@ -1154,7 +1154,7 @@ func Test_JMPEQ(t *testing.T) {
 
 func Test_UnhandledOp(t *testing.T) {
 	buf := bytes.Buffer{}
-	vm := NewVm(&buf, 2, 2)
+	vm := NewVm(&buf)
 	err := vm.Exec(ByteCode{{Uint64(1999)}})
 	if err == nil {
 		t.Error("expected error, got none")

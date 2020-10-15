@@ -8,7 +8,7 @@ type (
 	Builder struct {
 		// labels is a map of label strings and positions enabling
 		// pass to update with offsets
-		labels map[string]uint64
+		labels  map[string]uint64
 		rLabels map[uint64]string
 
 		// map of label to instruction and op positions that require updating
@@ -19,12 +19,14 @@ type (
 
 		// lines
 		asm asm
-
 	}
 
-	pos struct {i int; j int}
+	pos struct {
+		i int
+		j int
+	}
 
-	asm []line
+	asm  []line
 	line struct {
 		o Opcode
 		f Funct
@@ -32,7 +34,7 @@ type (
 		y interface{}
 		z interface{}
 	}
-	R uint64
+	R   uint64
 	Nil [8]byte
 )
 
@@ -49,13 +51,13 @@ func (b *Builder) Add(o Opcode, f Funct, r ...interface{}) {
 	var l line
 	switch len(r) {
 	case 0:
-		l = line{o,f, Nil{}, Nil{}, Nil{}}
+		l = line{o, f, Nil{}, Nil{}, Nil{}}
 	case 1:
-		l = line{o,f, r[0], Nil{}, Nil{}}
+		l = line{o, f, r[0], Nil{}, Nil{}}
 	case 2:
-		l = line{o,f, r[0], r[1], Nil{}}
+		l = line{o, f, r[0], r[1], Nil{}}
 	case 3:
-		l = line{o,f, r[0], r[1], r[2]}
+		l = line{o, f, r[0], r[1], r[2]}
 	default:
 		panic("too many arguments")
 	}
@@ -68,7 +70,7 @@ func (b *Builder) Label(l string) {
 }
 
 func (b *Builder) Exit() {
-	b.asm = append(b.asm,line{o:Exit})
+	b.asm = append(b.asm, line{o: Exit})
 }
 
 func (b *Builder) BC() ByteCode {
@@ -116,8 +118,6 @@ func (b *Builder) operand(a interface{}, inst *Inst, i int) {
 		inst[i] = Boolean(a)
 	}
 }
-
-
 
 func (r R) String() string {
 	return fmt.Sprintf("r%d", r)

@@ -10,28 +10,27 @@ import (
 type (
 	ByteCode  []Inst
 	Inst      [5][8]byte
-	Registers [][8]byte
+	Registers [20][8]byte
 	VM        struct {
 		w  io.Writer
 		pc uint64
 		sp uint64
 		r  Registers
-		s  [][8]byte
+		s  [100][8]byte
 		h  []interface{}
 	}
 )
 
 // Create a new VM struct
-func NewVm(writer io.Writer, registers int, stack int) *VM {
+func NewVm(writer io.Writer) *VM {
 	v := &VM{w: writer}
-	v.r = make([][8]byte, registers, registers)
-	v.s = make([][8]byte, stack, stack)
 	return v
 }
 
 // Execute instructions
 func (vm *VM) Exec(bc ByteCode) error {
-	_ = vm.r[len(vm.r) - 1] // bounds check elimination
+	_ = vm.r[len(vm.r)-1] // bounds check elimination
+	_ = vm.s[len(vm.s)-1] // bounds check elimination
 
 	var i *Inst
 	for {

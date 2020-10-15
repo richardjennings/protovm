@@ -4,6 +4,7 @@ import (
 	p "github.com/richardjennings/protovm"
 	"os"
 )
+
 // < me
 // > them
 func main() {
@@ -69,7 +70,7 @@ func main() {
 	bc := b.BC()
 
 	w := os.Stdout
-	vm := p.NewVm(w, 10, 100)
+	vm := p.NewVm(w)
 	err := vm.Exec(bc)
 	if err != nil {
 		panic(err)
