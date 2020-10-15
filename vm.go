@@ -401,6 +401,10 @@ func (vm *VM) Exec(bc ByteCode) error {
 			case Imm:
 				vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
 				continue
+			case SP:
+				vm.sp--
+				vm.pc = *(*uint64)(unsafe.Pointer(&vm.s[vm.sp]))
+				continue
 			}
 
 		case JMPEQ:
