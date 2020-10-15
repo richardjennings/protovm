@@ -31,6 +31,8 @@ func NewVm(writer io.Writer, registers int, stack int) *VM {
 
 // Execute instructions
 func (vm *VM) Exec(bc ByteCode) error {
+	_ = vm.r[len(vm.r) - 1] // bounds check elimination
+
 	var i Inst
 	for {
 		i = bc[vm.pc]
@@ -43,7 +45,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) &&
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateBool:
+			case ImmB:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&i[2])) &&
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -54,7 +56,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) ||
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateBool:
+			case ImmB:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&i[2])) ||
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -70,7 +72,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) +
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) +
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -78,7 +80,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) +
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) +
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -89,11 +91,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) -
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) -
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case IntImmediate:
+			case IImm:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) -
 						*(*int64)(unsafe.Pointer(&i[3]))
@@ -101,11 +103,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) -
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) -
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case FloatImmediate:
+			case FImm:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) -
 						*(*float64)(unsafe.Pointer(&i[3]))
@@ -116,7 +118,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) *
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) *
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -124,7 +126,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) *
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) *
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -135,11 +137,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) /
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) /
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case IntImmediate:
+			case IImm:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) /
 						*(*int64)(unsafe.Pointer(&i[3]))
@@ -147,11 +149,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) /
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) /
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case FloatImmediate:
+			case FImm:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) /
 						*(*float64)(unsafe.Pointer(&i[3]))
@@ -162,11 +164,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					int64(math.Pow(float64(*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))]))),
 						float64(*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					int64(math.Pow(float64(*(*int64)(unsafe.Pointer(&i[2]))),
 						float64(*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))))
-			case IntImmediate:
+			case IImm:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					int64(math.Pow(float64(*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))]))),
 						float64(*(*int64)(unsafe.Pointer(&i[3])))))
@@ -174,11 +176,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Pow(*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])),
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Pow(*(*float64)(unsafe.Pointer(&i[2])),
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))
-			case FloatImmediate:
+			case FImm:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Pow(*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])),
 						*(*float64)(unsafe.Pointer(&i[3])))
@@ -189,11 +191,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) %
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) %
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case IntImmediate:
+			case IImm:
 				*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) %
 						*(*int64)(unsafe.Pointer(&i[3]))
@@ -201,11 +203,11 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Remainder(*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])),
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))
-			case ImmediateFloat:
+			case ImmF:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Remainder(*(*float64)(unsafe.Pointer(&i[2])),
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))])))
-			case FloatImmediate:
+			case FImm:
 				*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					math.Remainder(*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])),
 						*(*float64)(unsafe.Pointer(&i[3])))
@@ -218,7 +220,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) ==
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) ==
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -226,7 +228,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) ==
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) ==
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -234,7 +236,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) ==
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateBool:
+			case ImmB:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&i[2])) ==
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -245,7 +247,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) !=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) !=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -253,7 +255,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) !=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) !=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -261,7 +263,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) !=
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateBool:
+			case ImmB:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*bool)(unsafe.Pointer(&i[2])) !=
 						*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -272,7 +274,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) <
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) <
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -280,7 +282,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) <
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) <
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -291,7 +293,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) <=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) <=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -299,7 +301,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) <=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) <=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -310,7 +312,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) >
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) >
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -318,7 +320,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) >
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) >
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -329,7 +331,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) >=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateInt:
+			case ImmI:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*int64)(unsafe.Pointer(&i[2])) >=
 						*(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -337,7 +339,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])) >=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
-			case ImmediateFloat:
+			case ImmF:
 				*(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) =
 					*(*float64)(unsafe.Pointer(&i[2])) >=
 						*(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[3]))]))
@@ -346,30 +348,30 @@ func (vm *VM) Exec(bc ByteCode) error {
 			switch Funct(*(*uint64)(unsafe.Pointer(&i[1]))) {
 			case Int:
 				_, _ = fmt.Fprint(vm.w, *(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateInt:
+			case ImmI:
 				_, _ = fmt.Fprint(vm.w, *(*int64)(unsafe.Pointer(&i[2])))
 			case Float:
 				_, _ = fmt.Fprint(vm.w, *(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateFloat:
+			case ImmF:
 				_, _ = fmt.Fprint(vm.w, *(*float64)(unsafe.Pointer(&i[2])))
 			case Bool:
 				_, _ = fmt.Fprint(vm.w, *(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateBool:
+			case ImmB:
 				_, _ = fmt.Fprint(vm.w, *(*bool)(unsafe.Pointer(&i[2])))
 			}
 		case PrintLn:
 			switch Funct(*(*uint64)(unsafe.Pointer(&i[1]))) {
 			case Int:
 				_, _ = fmt.Fprintln(vm.w, *(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateInt:
+			case ImmI:
 				_, _ = fmt.Fprintln(vm.w, *(*int64)(unsafe.Pointer(&i[2])))
 			case Float:
 				_, _ = fmt.Fprintln(vm.w, *(*float64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateFloat:
+			case ImmF:
 				_, _ = fmt.Fprintln(vm.w, *(*float64)(unsafe.Pointer(&i[2])))
 			case Bool:
 				_, _ = fmt.Fprintln(vm.w, *(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))])))
-			case ImmediateBool:
+			case ImmB:
 				_, _ = fmt.Fprintln(vm.w, *(*bool)(unsafe.Pointer(&i[2])))
 			}
 		case Load:
@@ -396,15 +398,33 @@ func (vm *VM) Exec(bc ByteCode) error {
 			case None:
 				vm.pc = *(*uint64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[2]))]))
 				continue
-			case Immediate:
+			case Imm:
 				vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
 				continue
 			}
 
 		case JMPEQ:
 			switch Funct(*(*uint64)(unsafe.Pointer(&i[1]))) {
-			case ImmediateBool:
+			case ImmB:
 				if *(*bool)(unsafe.Pointer(&i[3])) == *(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) {
+					vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
+					continue
+				}
+			case ImmI:
+				if *(*int64)(unsafe.Pointer(&i[3])) == *(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) {
+					vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
+					continue
+				}
+			}
+		case JMPNEQ:
+			switch Funct(*(*uint64)(unsafe.Pointer(&i[1]))) {
+			case ImmB:
+				if *(*bool)(unsafe.Pointer(&i[3])) != *(*bool)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) {
+					vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
+					continue
+				}
+			case ImmI:
+				if *(*int64)(unsafe.Pointer(&i[3])) != *(*int64)(unsafe.Pointer(&vm.r[*(*uint64)(unsafe.Pointer(&i[4]))])) {
 					vm.pc = *(*uint64)(unsafe.Pointer(&i[2]))
 					continue
 				}

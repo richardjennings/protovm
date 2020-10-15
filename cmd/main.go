@@ -7,51 +7,87 @@ import (
 // < me
 // > them
 func main() {
+	b := p.NewBuilder()
+	// add return position to stack
+	b.Add(p.Store, p.SP, "END")
+	// add function arg $n to the stack
+	b.Add(p.Store, p.SP, uint64(35))
+	//
+	b.Label("fib($n)")
+	// pop fib arg from stack into R1
+	b.Add(p.Load, p.SP, p.R(1))
+	// jump to next if condition if $n != 0
+	b.Add(p.JMPNEQ, p.ImmI, "if $n == 1", int64(0), p.R(1))
+	// pop return address into R2
+	b.Add(p.Load, p.SP, p.R(2))
+	// push 0 to stack and return
+	b.Add(p.Store, p.SP, int64(0))
+	// goto R2 caller address
+	b.Add(p.JMP, p.None,  p.R(2))
+	//
+	b.Label("if $n == 1")
+	// jump to recursive calls if $n != 1
+	b.Add(p.JMPNEQ, p.ImmI, "fib($n - 1)", int64(1), p.R(1))
+	// pop return address into R2
+	b.Add(p.Load, p.SP, p.R(2))
+	// push 0 to stack and return
+	b.Add(p.Store, p.SP, int64(1)) //10
+	// goto R2 caller address
+	b.Add(p.JMP, p.None, p.R(2))
+	//
+	b.Label("fib($n - 1)")
+	// $n - 1 => R2
+	b.Add(p.Sub, p.IImm, p.R(1), int64(1), p.R(2))
+	// push n to stack to recover after recursive call
+	b.Add(p.Store, p.SPR, p.R(1))
+	// push return address to stack
+	b.Add(p.Store, p.SP, "fib($n - 2)")
+	// push n - 1 to stack as argument to recursive call
+	b.Add(p.Store, p.SPR, p.R(2))
+	// goto recursive function call
+	b.Add(p.JMP, p.Imm, "fib($n)")
+	//
+	b.Label("fib($n - 2)")
+	// pop result into r(2)
+	b.Add(p.Load, p.SP, p.R(2))
+	// pop $n off of stack into R1
+	b.Add(p.Load, p.SP, p.R(1))
+	// push previous result back R2 onto the stack
+	b.Add(p.Store, p.SPR, p.R(2))
+	// $n - 2 => R2
+	b.Add(p.Sub, p.IImm, p.R(1), int64(2), p.R(2))
+	// push return address to stack
+	b.Add(p.Store, p.SP, "fib($n - 1) + fib($n - 2)")
+	// push n - 2 to stack as argument to recursive call
+	b.Add(p.Store, p.SPR, p.R(2))
+	// goto recursive function call
+	b.Add(p.JMP, p.Imm, "fib($n)")
+	//
+	b.Label("fib($n - 1) + fib($n - 2)")
+	// pop fib($n-2) result into R2
+	b.Add(p.Load, p.SP, p.R(2))
+	// pop fib($n-1) result into R1
+	b.Add(p.Load, p.SP, p.R(1))
+	// add R1 R2 into R1
+	b.Add(p.Add, p.Int, p.R(1), p.R(2), p.R(4))
+	// pop return address into R2
+	b.Add(p.Load, p.SP, p.R(2))
+	// push result R1 onto stack
+	b.Add(p.Store, p.SPR, p.R(4))
+	// jump to return address
+	b.Add(p.JMP, p.None, p.R(2))
+	//
+	b.Label("END")
+	b.Add(p.Load, p.SP, p.R(0))
+	b.Add(p.PrintLn, p.Int, p.R(0))
+	b.Exit()
+
+	//fmt.Println(b)
+
+	bc := b.BC()
+
 	w := os.Stdout
-	vm := p.NewVm(w, 20, 1000)
-	bc := p.ByteCode{
-		{p.Op(p.Store), p.F(p.SP), p.Uint64(31)},// <add return position to stack @todo jump address
-		{p.Op(p.Store), p.F(p.SP), p.Int64(35)},// >add 35 to stack
-// fn fib ($n int) (int)
-		{p.Op(p.Load), p.F(p.SP), p.R(1)},// pop fib arg from stack into R1
-// $n == 0?
-		{p.Op(p.Eq), p.F(p.ImmediateInt), p.Int64(0), p.R(1), p.R(2)},// $n == 0 => R2
-		{p.Op(p.JMPEQ), p.F(p.ImmediateBool), p.Uint64(8), p.Boolean(false), p.R(2)}, //@todo update jump address (if $n == 1)
-		{p.Op(p.Load), p.F(p.SP), p.R(2)},// pop return address into R2
-		{p.Op(p.Store), p.F(p.SP), p.Int64(0)},//>is 0 so push to stack and return
-		{p.Op(p.JMP), p.F(p.None), p.R(2)},// goto R2 caller address
-// $n == 1?
-		{p.Op(p.Eq), p.F(p.ImmediateInt), p.Int64(1), p.R(1), p.R(2)},/// not 0 so try 1
-		{p.Op(p.JMPEQ), p.F(p.ImmediateBool), p.Uint64(13), p.Boolean(false), p.R(2)}, //@todo update jump address (fib($n -1 ...
-		{p.Op(p.Load), p.F(p.SP), p.R(2)},// pop return address into R2
-		{p.Op(p.Store), p.F(p.SP), p.Int64(1)},// push result 1 to stack
-		{p.Op(p.JMP), p.F(p.None), p.R(2)},// goto R2 caller address
-// fib($n - 1)
-		{p.Op(p.Sub), p.F(p.IntImmediate), p.R(1), p.Int64(1), p.R(2)},// n - 1 R2
-		{p.Op(p.Store), p.F(p.SPR), p.R(1)},// <push n to stack to recover after recursive call
-		{p.Op(p.Store), p.F(p.SP), p.Uint64(18)}, // >push return address to stack @todo jump address
-		{p.Op(p.Store), p.F(p.SPR), p.R(2)},// >push n - 1 to stack as argument to recursive call
-		{p.Op(p.JMP), p.F(p.Immediate), p.Uint64(2)},// goto recursive function call @todo update jmp address
-		{p.Op(p.Load), p.F(p.SP), p.R(2)},// pop result into R(2)
-// fib ($n - 2)
-		{p.Op(p.Load), p.F(p.SP), p.R(1)},// pop $n off of stack into R1
-		{p.Op(p.Store), p.F(p.SPR), p.R(2)},// push previous result back R2 onto the stack
-		{p.Op(p.Sub), p.F(p.IntImmediate), p.R(1), p.Int64(2), p.R(2)},// n - 2 R2
-		{p.Op(p.Store), p.F(p.SP), p.Uint64(25)}, // >push return address to stack @todo jump address
-		{p.Op(p.Store), p.F(p.SPR), p.R(2)},// >push n - 2 to stack as argument to recursive call
-		{p.Op(p.JMP), p.F(p.Immediate), p.Uint64(2)},// goto recursive function call @todo update jmp address
-// fib($n-1) + fib($n-2)
-		{p.Op(p.Load), p.F(p.SP), p.R(2)},// pop fib($n-2) result into R2
-		{p.Op(p.Load), p.F(p.SP), p.R(1)},// pop fib($n-1) result into R1
-		{p.Op(p.Add), p.F(p.Int), p.R(1), p.R(2), p.R(4)},// add R1 R2 into R1
-		{p.Op(p.Load), p.F(p.SP), p.R(2)},// pop return address into R2
-		{p.Op(p.Store), p.F(p.SPR), p.R(4)},// push result R1 onto stack
-		{p.Op(p.JMP), p.F(p.None), p.R(2)},// jump to return address
-// end of fib
-		{p.Op(p.Load), p.F(p.SP), p.R(0)},// pop result from stack into r0
-		{p.Op(p.PrintLn), p.F(p.Int), p.R(0)},// print result r1
-		{p.Op(p.Exit)},// done
-	}
+	vm := p.NewVm(w, 10, 100)
 	err := vm.Exec(bc)
 	if err != nil {
 		panic(err)

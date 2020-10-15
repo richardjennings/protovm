@@ -39,26 +39,26 @@ func Test_And(t *testing.T) {
 		{
 			// And Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(Store), F(None), Boolean(true), R(Reg(2))},
-				{Op(Store), F(None), Boolean(false), R(Reg(4))},
-				{Op(Store), F(None), Boolean(true), R(Reg(5))},
-				{Op(And), F(Bool), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(And), F(Bool), R(Reg(4)), R(Reg(5)), R(Reg(6))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(Store), F(None), Boolean(true), r(Reg(2))},
+				{Op(Store), F(None), Boolean(false), r(Reg(4))},
+				{Op(Store), F(None), Boolean(true), r(Reg(5))},
+				{Op(And), F(Bool), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(And), F(Bool), r(Reg(4)), r(Reg(5)), r(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// And ImmediateBool
+			// And ImmB
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(And), F(ImmediateBool), Boolean(true), R(Reg(1)), R(Reg(2))},
-				{Op(And), F(ImmediateBool), Boolean(false), R(Reg(1)), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(2))},
-				{Op(Print), F(Bool), R(Reg(3))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(And), F(ImmB), Boolean(true), r(Reg(1)), r(Reg(2))},
+				{Op(And), F(ImmB), Boolean(false), r(Reg(1)), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(2))},
+				{Op(Print), F(Bool), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -71,26 +71,26 @@ func Test_Or(t *testing.T) {
 		{
 			// Or Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(Store), F(None), Boolean(false), R(Reg(2))},
-				{Op(Store), F(None), Boolean(false), R(Reg(4))},
-				{Op(Store), F(None), Boolean(false), R(Reg(5))},
-				{Op(Or), F(Bool), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Or), F(Bool), R(Reg(4)), R(Reg(5)), R(Reg(6))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(Store), F(None), Boolean(false), r(Reg(2))},
+				{Op(Store), F(None), Boolean(false), r(Reg(4))},
+				{Op(Store), F(None), Boolean(false), r(Reg(5))},
+				{Op(Or), F(Bool), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Or), F(Bool), r(Reg(4)), r(Reg(5)), r(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// Or ImmediateBool
+			// Or ImmB
 			ByteCode{
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(Or), F(ImmediateBool), Boolean(true), R(Reg(1)), R(Reg(2))},
-				{Op(Or), F(ImmediateBool), Boolean(false), R(Reg(1)), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(2))},
-				{Op(Print), F(Bool), R(Reg(3))},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(Or), F(ImmB), Boolean(true), r(Reg(1)), r(Reg(2))},
+				{Op(Or), F(ImmB), Boolean(false), r(Reg(1)), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(2))},
+				{Op(Print), F(Bool), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -103,12 +103,12 @@ func Test_Not(t *testing.T) {
 		{
 			// Not
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(Store), F(None), Boolean(false), R(Reg(2))},
-				{Op(Not), F(Bool), R(Reg(1)), [8]byte{}, R(Reg(3))},
-				{Op(Not), F(Bool), R(Reg(2)), [8]byte{}, R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(Store), F(None), Boolean(false), r(Reg(2))},
+				{Op(Not), F(Bool), r(Reg(1)), [8]byte{}, r(Reg(3))},
+				{Op(Not), F(Bool), r(Reg(2)), [8]byte{}, r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -121,21 +121,21 @@ func Test_Add(t *testing.T) {
 		{
 			// Add Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Add), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Add), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"30",
 		},
 		{
-			// Add ImmediateInt
+			// Add ImmI
 			ByteCode{
 				// store int 10 in reg 1,
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Add), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Add), F(ImmI), Int64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"30",
@@ -143,20 +143,20 @@ func Test_Add(t *testing.T) {
 		{
 			// Add Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(Add), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(Add), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"30",
 		},
 		{
-			// Add ImmediateFloat
+			// Add ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Add), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Add), F(ImmF), Float64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"30",
@@ -169,30 +169,30 @@ func Test_Sub(t *testing.T) {
 		{
 			// Sub Int
 			ByteCode{
-				{Op(Store), F(None), Int64(30), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Sub), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(30), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Sub), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"20",
 		},
 		{
-			// Sub ImmediateInt
+			// Sub ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Sub), F(ImmediateInt), Int64(30), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Sub), F(ImmI), Int64(30), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"20",
 		},
 		{
-			// Sub IntImmediate
+			// Sub IImm
 			ByteCode{
-				{Op(Store), F(None), Int64(30), R(Reg(1))},
-				{Op(Sub), F(IntImmediate), R(Reg(1)), Int64(10), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(30), r(Reg(1))},
+				{Op(Sub), F(IImm), r(Reg(1)), Int64(10), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"20",
@@ -200,30 +200,30 @@ func Test_Sub(t *testing.T) {
 		{
 			// Sub Float
 			ByteCode{
-				{Op(Store), F(None), Float64(30), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(Sub), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(30), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(Sub), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"20",
 		},
 		{
-			// Sub ImmediateFloat
+			// Sub ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Sub), F(ImmediateFloat), Float64(30), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Sub), F(ImmF), Float64(30), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"20",
 		},
 		{
-			// Sub FloatImmediate
+			// Sub FImm
 			ByteCode{
-				{Op(Store), F(None), Float64(30), R(Reg(1))},
-				{Op(Sub), F(FloatImmediate), R(Reg(1)), Float64(10), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(30), r(Reg(1))},
+				{Op(Sub), F(FImm), r(Reg(1)), Float64(10), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"20",
@@ -236,20 +236,20 @@ func Test_Mul(t *testing.T) {
 		{
 			// Mul Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Mul), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Mul), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"200",
 		},
 		{
-			// Mul ImmediateInt
+			// Mul ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Mul), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Mul), F(ImmI), Int64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"200",
@@ -257,20 +257,20 @@ func Test_Mul(t *testing.T) {
 		{
 			// Mul Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(Mul), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(Mul), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"200",
 		},
 		{
-			// Mul ImmediateFloat
+			// Mul ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Mul), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Mul), F(ImmF), Float64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"200",
@@ -283,30 +283,30 @@ func Test_Quo(t *testing.T) {
 		{
 			// Quo Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Quo), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Quo), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Quo ImmediateInt
+			// Quo ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Quo), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Quo), F(ImmI), Int64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Quo IntImmediate
+			// Quo IImm
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Quo), F(IntImmediate), R(Reg(1)), Int64(10), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Quo), F(IImm), r(Reg(1)), Int64(10), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
@@ -314,30 +314,30 @@ func Test_Quo(t *testing.T) {
 		{
 			// Quo Float
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(Quo), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(Quo), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Quo ImmediateFloat
+			// Quo ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Quo), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Quo), F(ImmF), Float64(20), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Quo FloatImmediate
+			// Quo FImm
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Quo), F(FloatImmediate), R(Reg(1)), Float64(10), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Quo), F(FImm), r(Reg(1)), Float64(10), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
@@ -350,30 +350,30 @@ func Test_Pow(t *testing.T) {
 		{
 			// Pow Int
 			ByteCode{
-				{Op(Store), F(None), Int64(2), R(Reg(1))},
-				{Op(Store), F(None), Int64(3), R(Reg(2))},
-				{Op(Pow), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(2), r(Reg(1))},
+				{Op(Store), F(None), Int64(3), r(Reg(2))},
+				{Op(Pow), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"8",
 		},
 		{
-			// Pow ImmediateInt
+			// Pow ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(3), R(Reg(1))},
-				{Op(Pow), F(ImmediateInt), Int64(2), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(3), r(Reg(1))},
+				{Op(Pow), F(ImmI), Int64(2), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"8",
 		},
 		{
-			// Pow IntImmediate
+			// Pow IImm
 			ByteCode{
-				{Op(Store), F(None), Int64(2), R(Reg(1))},
-				{Op(Pow), F(IntImmediate), R(Reg(1)), Int64(3), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(2), r(Reg(1))},
+				{Op(Pow), F(IImm), r(Reg(1)), Int64(3), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"8",
@@ -381,30 +381,30 @@ func Test_Pow(t *testing.T) {
 		{
 			// Pow Float
 			ByteCode{
-				{Op(Store), F(None), Float64(2), R(Reg(1))},
-				{Op(Store), F(None), Float64(3), R(Reg(2))},
-				{Op(Pow), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(2), r(Reg(1))},
+				{Op(Store), F(None), Float64(3), r(Reg(2))},
+				{Op(Pow), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"8",
 		},
 		{
-			// Pow ImmediateFloat
+			// Pow ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(3), R(Reg(1))},
-				{Op(Pow), F(ImmediateFloat), Float64(2), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(3), r(Reg(1))},
+				{Op(Pow), F(ImmF), Float64(2), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"8",
 		},
 		{
-			// Pow FloatImmediate
+			// Pow FImm
 			ByteCode{
-				{Op(Store), F(None), Float64(2), R(Reg(1))},
-				{Op(Pow), F(FloatImmediate), R(Reg(1)), Float64(3), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(2), r(Reg(1))},
+				{Op(Pow), F(FImm), r(Reg(1)), Float64(3), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"8",
@@ -417,30 +417,30 @@ func Test_Rem(t *testing.T) {
 		{
 			// Rem Int
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(4), R(Reg(2))},
-				{Op(Rem), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(4), r(Reg(2))},
+				{Op(Rem), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Rem ImmediateInt
+			// Rem ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(4), R(Reg(1))},
-				{Op(Rem), F(ImmediateInt), Int64(10), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(4), r(Reg(1))},
+				{Op(Rem), F(ImmI), Int64(10), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Rem IntImmediate
+			// Rem IImm
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Rem), F(IntImmediate), R(Reg(1)), Int64(4), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Rem), F(IImm), r(Reg(1)), Int64(4), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
@@ -448,30 +448,30 @@ func Test_Rem(t *testing.T) {
 		{
 			// Rem Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(4), R(Reg(2))},
-				{Op(Rem), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(Print), F(Float), R(Reg(3))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(4), r(Reg(2))},
+				{Op(Rem), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(Print), F(Float), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Rem ImmediateFloat
+			// Rem ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(4), R(Reg(1))},
-				{Op(Rem), F(ImmediateFloat), Float64(10), R(Reg(1)), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(4), r(Reg(1))},
+				{Op(Rem), F(ImmF), Float64(10), r(Reg(1)), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
 		},
 		{
-			// Rem FloatImmediate
+			// Rem FImm
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Rem), F(FloatImmediate), R(Reg(1)), Float64(4), R(Reg(2))},
-				{Op(Print), F(Float), R(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Rem), F(FImm), r(Reg(1)), Float64(4), r(Reg(2))},
+				{Op(Print), F(Float), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"2",
@@ -484,26 +484,26 @@ func Test_Eq(t *testing.T) {
 		{
 			// Eq Int
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(20), R(Reg(2))},
-				{Op(Store), F(None), Int64(20), R(Reg(3))},
-				{Op(Eq), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(Eq), F(Int), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(20), r(Reg(2))},
+				{Op(Store), F(None), Int64(20), r(Reg(3))},
+				{Op(Eq), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(Eq), F(Int), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// Eq ImmediateInt
+			// Eq ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(20), R(Reg(2))},
-				{Op(Eq), F(ImmediateInt), Int64(11), R(Reg(1)), R(Reg(3))},
-				{Op(Eq), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(20), r(Reg(2))},
+				{Op(Eq), F(ImmI), Int64(11), r(Reg(1)), r(Reg(3))},
+				{Op(Eq), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -511,26 +511,26 @@ func Test_Eq(t *testing.T) {
 		{
 			// Eq Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(Store), F(None), Float64(20), R(Reg(3))},
-				{Op(Eq), F(Float), R(Reg(1)), R(Reg(3)), R(Reg(4))},
-				{Op(Eq), F(Float), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(Store), F(None), Float64(20), r(Reg(3))},
+				{Op(Eq), F(Float), r(Reg(1)), r(Reg(3)), r(Reg(4))},
+				{Op(Eq), F(Float), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// Eq ImmediateFloat
+			// Eq ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(Eq), F(ImmediateFloat), Float64(10), R(Reg(2)), R(Reg(3))},
-				{Op(Eq), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(Eq), F(ImmF), Float64(10), r(Reg(2)), r(Reg(3))},
+				{Op(Eq), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -538,26 +538,26 @@ func Test_Eq(t *testing.T) {
 		{
 			// Eq Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(Store), F(None), Boolean(true), R(Reg(2))},
-				{Op(Store), F(None), Boolean(true), R(Reg(3))},
-				{Op(Eq), F(Bool), R(Reg(1)), R(Reg(3)), R(Reg(4))},
-				{Op(Eq), F(Bool), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(Store), F(None), Boolean(true), r(Reg(2))},
+				{Op(Store), F(None), Boolean(true), r(Reg(3))},
+				{Op(Eq), F(Bool), r(Reg(1)), r(Reg(3)), r(Reg(4))},
+				{Op(Eq), F(Bool), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// Eq ImmediateBool
+			// Eq ImmB
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(Store), F(None), Boolean(false), R(Reg(2))},
-				{Op(Eq), F(ImmediateBool), Boolean(true), R(Reg(2)), R(Reg(3))},
-				{Op(Eq), F(ImmediateBool), Boolean(false), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(Store), F(None), Boolean(false), r(Reg(2))},
+				{Op(Eq), F(ImmB), Boolean(true), r(Reg(2)), r(Reg(3))},
+				{Op(Eq), F(ImmB), Boolean(false), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -570,26 +570,26 @@ func Test_NEq(t *testing.T) {
 		{
 			// NEq Int
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(20), R(Reg(2))},
-				{Op(Store), F(None), Int64(20), R(Reg(3))},
-				{Op(NEq), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(NEq), F(Int), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(20), r(Reg(2))},
+				{Op(Store), F(None), Int64(20), r(Reg(3))},
+				{Op(NEq), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(NEq), F(Int), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// NEq ImmediateInt
+			// NEq ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(20), R(Reg(2))},
-				{Op(NEq), F(ImmediateInt), Int64(11), R(Reg(1)), R(Reg(3))},
-				{Op(NEq), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(20), r(Reg(2))},
+				{Op(NEq), F(ImmI), Int64(11), r(Reg(1)), r(Reg(3))},
+				{Op(NEq), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -597,26 +597,26 @@ func Test_NEq(t *testing.T) {
 		{
 			// NEq Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(Store), F(None), Float64(20), R(Reg(3))},
-				{Op(NEq), F(Float), R(Reg(1)), R(Reg(3)), R(Reg(4))},
-				{Op(NEq), F(Float), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(Store), F(None), Float64(20), r(Reg(3))},
+				{Op(NEq), F(Float), r(Reg(1)), r(Reg(3)), r(Reg(4))},
+				{Op(NEq), F(Float), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// NEq ImmediateFloat
+			// NEq ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(20), R(Reg(2))},
-				{Op(NEq), F(ImmediateFloat), Float64(10), R(Reg(2)), R(Reg(3))},
-				{Op(NEq), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(20), r(Reg(2))},
+				{Op(NEq), F(ImmF), Float64(10), r(Reg(2)), r(Reg(3))},
+				{Op(NEq), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -624,26 +624,26 @@ func Test_NEq(t *testing.T) {
 		{
 			// NEq Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(Store), F(None), Boolean(true), R(Reg(2))},
-				{Op(Store), F(None), Boolean(true), R(Reg(3))},
-				{Op(NEq), F(Bool), R(Reg(1)), R(Reg(3)), R(Reg(4))},
-				{Op(NEq), F(Bool), R(Reg(2)), R(Reg(3)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(Store), F(None), Boolean(true), r(Reg(2))},
+				{Op(Store), F(None), Boolean(true), r(Reg(3))},
+				{Op(NEq), F(Bool), r(Reg(1)), r(Reg(3)), r(Reg(4))},
+				{Op(NEq), F(Bool), r(Reg(2)), r(Reg(3)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// NEq ImmediateBool
+			// NEq ImmB
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(Store), F(None), Boolean(false), R(Reg(2))},
-				{Op(NEq), F(ImmediateBool), Boolean(true), R(Reg(2)), R(Reg(3))},
-				{Op(NEq), F(ImmediateBool), Boolean(false), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(Store), F(None), Boolean(false), r(Reg(2))},
+				{Op(NEq), F(ImmB), Boolean(true), r(Reg(2)), r(Reg(3))},
+				{Op(NEq), F(ImmB), Boolean(false), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -656,26 +656,26 @@ func Test_LT(t *testing.T) {
 		{
 			// LT Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(LT), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(LT), F(Int), R(Reg(2)), R(Reg(1)), R(Reg(4))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(LT), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(LT), F(Int), r(Reg(2)), r(Reg(1)), r(Reg(4))},
 				// print reg 3
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// LT ImmediateInt
+			// LT ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(30), R(Reg(2))},
-				{Op(LT), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(3))},
-				{Op(LT), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(30), r(Reg(2))},
+				{Op(LT), F(ImmI), Int64(20), r(Reg(1)), r(Reg(3))},
+				{Op(LT), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -683,25 +683,25 @@ func Test_LT(t *testing.T) {
 		{
 			// LT Float
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(LT), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(LT), F(Float), R(Reg(2)), R(Reg(1)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(LT), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(LT), F(Float), r(Reg(2)), r(Reg(1)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// LT ImmediateFloat
+			// LT ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(30), R(Reg(2))},
-				{Op(LT), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(3))},
-				{Op(LT), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(30), r(Reg(2))},
+				{Op(LT), F(ImmF), Float64(20), r(Reg(1)), r(Reg(3))},
+				{Op(LT), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -714,31 +714,31 @@ func Test_LTE(t *testing.T) {
 		{
 			// LTE Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Store), F(None), Int64(10), R(Reg(3))},
-				{Op(LTE), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(LTE), F(Int), R(Reg(2)), R(Reg(1)), R(Reg(5))},
-				{Op(LTE), F(Int), R(Reg(3)), R(Reg(3)), R(Reg(6))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(3))},
+				{Op(LTE), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(LTE), F(Int), r(Reg(2)), r(Reg(1)), r(Reg(5))},
+				{Op(LTE), F(Int), r(Reg(3)), r(Reg(3)), r(Reg(6))},
 				// print reg 3
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"falsetruetrue",
 		},
 		{
-			// LTE ImmediateInt
+			// LTE ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(30), R(Reg(2))},
-				{Op(LTE), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(3))},
-				{Op(LTE), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(LTE), F(ImmediateInt), Int64(30), R(Reg(2)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(30), r(Reg(2))},
+				{Op(LTE), F(ImmI), Int64(20), r(Reg(1)), r(Reg(3))},
+				{Op(LTE), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(LTE), F(ImmI), Int64(30), r(Reg(2)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"falsetruetrue",
@@ -746,30 +746,30 @@ func Test_LTE(t *testing.T) {
 		{
 			// LTE Float
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(Store), F(None), Float64(10), R(Reg(3))},
-				{Op(LTE), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(LTE), F(Float), R(Reg(2)), R(Reg(1)), R(Reg(5))},
-				{Op(LTE), F(Float), R(Reg(2)), R(Reg(3)), R(Reg(6))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(3))},
+				{Op(LTE), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(LTE), F(Float), r(Reg(2)), r(Reg(1)), r(Reg(5))},
+				{Op(LTE), F(Float), r(Reg(2)), r(Reg(3)), r(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"falsetruetrue",
 		},
 		{
-			// LTE ImmediateFloat
+			// LTE ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(30), R(Reg(2))},
-				{Op(LTE), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(3))},
-				{Op(LTE), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(LTE), F(ImmediateFloat), Float64(30), R(Reg(2)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(30), r(Reg(2))},
+				{Op(LTE), F(ImmF), Float64(20), r(Reg(1)), r(Reg(3))},
+				{Op(LTE), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(LTE), F(ImmF), Float64(30), r(Reg(2)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"falsetruetrue",
@@ -782,26 +782,26 @@ func Test_GT(t *testing.T) {
 		{
 			// GT Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(GT), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(GT), F(Int), R(Reg(2)), R(Reg(1)), R(Reg(4))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(GT), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(GT), F(Int), r(Reg(2)), r(Reg(1)), r(Reg(4))},
 				// print reg 3
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// GT ImmediateInt
+			// GT ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(30), R(Reg(2))},
-				{Op(GT), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(3))},
-				{Op(GT), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(30), r(Reg(2))},
+				{Op(GT), F(ImmI), Int64(20), r(Reg(1)), r(Reg(3))},
+				{Op(GT), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -809,25 +809,25 @@ func Test_GT(t *testing.T) {
 		{
 			// GT Float
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(GT), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(3))},
-				{Op(GT), F(Float), R(Reg(2)), R(Reg(1)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(GT), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(3))},
+				{Op(GT), F(Float), r(Reg(2)), r(Reg(1)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
 		},
 		{
-			// GT ImmediateFloat
+			// GT ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10),  R(Reg(1))},
-				{Op(Store), F(None), Float64(30), R(Reg(2))},
-				{Op(GT), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(3))},
-				{Op(GT), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
+				{Op(Store), F(None), Float64(10),  r(Reg(1))},
+				{Op(Store), F(None), Float64(30), r(Reg(2))},
+				{Op(GT), F(ImmF), Float64(20), r(Reg(1)), r(Reg(3))},
+				{Op(GT), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
 				{Op(Exit)},
 			},
 			"truefalse",
@@ -840,31 +840,31 @@ func Test_GTE(t *testing.T) {
 		{
 			// GTE Int
 			ByteCode{
-				{Op(Store), F(None), Int64(20), R(Reg(1))},
-				{Op(Store), F(None), Int64(10), R(Reg(2))},
-				{Op(Store), F(None), Int64(10), R(Reg(3))},
-				{Op(GTE), F(Int), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(GTE), F(Int), R(Reg(2)), R(Reg(1)), R(Reg(5))},
-				{Op(GTE), F(Int), R(Reg(3)), R(Reg(3)), R(Reg(6))},
+				{Op(Store), F(None), Int64(20), r(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(2))},
+				{Op(Store), F(None), Int64(10), r(Reg(3))},
+				{Op(GTE), F(Int), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(GTE), F(Int), r(Reg(2)), r(Reg(1)), r(Reg(5))},
+				{Op(GTE), F(Int), r(Reg(3)), r(Reg(3)), r(Reg(6))},
 				// print reg 3
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"truefalsetrue",
 		},
 		{
-			// GTE ImmediateInt
+			// GTE ImmI
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Store), F(None), Int64(30), R(Reg(2))},
-				{Op(GTE), F(ImmediateInt), Int64(20), R(Reg(1)), R(Reg(3))},
-				{Op(GTE), F(ImmediateInt), Int64(20), R(Reg(2)), R(Reg(4))},
-				{Op(GTE), F(ImmediateInt), Int64(30), R(Reg(2)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Store), F(None), Int64(30), r(Reg(2))},
+				{Op(GTE), F(ImmI), Int64(20), r(Reg(1)), r(Reg(3))},
+				{Op(GTE), F(ImmI), Int64(20), r(Reg(2)), r(Reg(4))},
+				{Op(GTE), F(ImmI), Int64(30), r(Reg(2)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"truefalsetrue",
@@ -872,30 +872,30 @@ func Test_GTE(t *testing.T) {
 		{
 			// GTE Float
 			ByteCode{
-				{Op(Store), F(None), Float64(20), R(Reg(1))},
-				{Op(Store), F(None), Float64(10), R(Reg(2))},
-				{Op(Store), F(None), Float64(10), R(Reg(3))},
-				{Op(GTE), F(Float), R(Reg(1)), R(Reg(2)), R(Reg(4))},
-				{Op(GTE), F(Float), R(Reg(2)), R(Reg(1)), R(Reg(5))},
-				{Op(GTE), F(Float), R(Reg(2)), R(Reg(3)), R(Reg(6))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(6))},
+				{Op(Store), F(None), Float64(20), r(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(2))},
+				{Op(Store), F(None), Float64(10), r(Reg(3))},
+				{Op(GTE), F(Float), r(Reg(1)), r(Reg(2)), r(Reg(4))},
+				{Op(GTE), F(Float), r(Reg(2)), r(Reg(1)), r(Reg(5))},
+				{Op(GTE), F(Float), r(Reg(2)), r(Reg(3)), r(Reg(6))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(6))},
 				{Op(Exit)},
 			},
 			"truefalsetrue",
 		},
 		{
-			// GTE ImmediateFloat
+			// GTE ImmF
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Store), F(None), Float64(30), R(Reg(2))},
-				{Op(GTE), F(ImmediateFloat), Float64(20), R(Reg(1)), R(Reg(3))},
-				{Op(GTE), F(ImmediateFloat), Float64(20), R(Reg(2)), R(Reg(4))},
-				{Op(GTE), F(ImmediateFloat), Float64(30), R(Reg(2)), R(Reg(5))},
-				{Op(Print), F(Bool), R(Reg(3))},
-				{Op(Print), F(Bool), R(Reg(4))},
-				{Op(Print), F(Bool), R(Reg(5))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Store), F(None), Float64(30), r(Reg(2))},
+				{Op(GTE), F(ImmF), Float64(20), r(Reg(1)), r(Reg(3))},
+				{Op(GTE), F(ImmF), Float64(20), r(Reg(2)), r(Reg(4))},
+				{Op(GTE), F(ImmF), Float64(30), r(Reg(2)), r(Reg(5))},
+				{Op(Print), F(Bool), r(Reg(3))},
+				{Op(Print), F(Bool), r(Reg(4))},
+				{Op(Print), F(Bool), r(Reg(5))},
 				{Op(Exit)},
 			},
 			"truefalsetrue",
@@ -908,16 +908,16 @@ func Test_Print(t *testing.T) {
 		{
 			// Print Int
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(Print), F(Int), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"10",
 		},
 		{
-			// Print ImmediateInt
+			// Print ImmI
 			ByteCode{
-				{Op(Print), F(ImmediateInt), Int64(10)},
+				{Op(Print), F(ImmI), Int64(10)},
 				{Op(Exit)},
 			},
 			"10",
@@ -925,16 +925,16 @@ func Test_Print(t *testing.T) {
 		{
 			// Print Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(Print), F(Float), R(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(Print), F(Float), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"10",
 		},
 		{
-			// Print ImmediateFloat
+			// Print ImmF
 			ByteCode{
-				{Op(Print), F(ImmediateFloat), Float64(10)},
+				{Op(Print), F(ImmF), Float64(10)},
 				{Op(Exit)},
 			},
 			"10",
@@ -942,19 +942,19 @@ func Test_Print(t *testing.T) {
 		{
 			// Print Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(Store), F(None), Boolean(true), R(Reg(2))},
-				{Op(Print), F(Bool), R(Reg(1))},
-				{Op(Print), F(Bool), R(Reg(2))},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(Store), F(None), Boolean(true), r(Reg(2))},
+				{Op(Print), F(Bool), r(Reg(1))},
+				{Op(Print), F(Bool), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"falsetrue",
 		},
 		{
-			// Print ImmediateBool
+			// Print ImmB
 			ByteCode{
-				{Op(Print), F(ImmediateBool), Boolean(false)},
-				{Op(Print), F(ImmediateBool), Boolean(true)},
+				{Op(Print), F(ImmB), Boolean(false)},
+				{Op(Print), F(ImmB), Boolean(true)},
 				{Op(Exit)},
 			},
 			"falsetrue",
@@ -967,16 +967,16 @@ func Test_PrintLn(t *testing.T) {
 		{
 			// PrintLn Int
 			ByteCode{
-				{Op(Store), F(None), Int64(10), R(Reg(1))},
-				{Op(PrintLn), F(Int), R(Reg(1))},
+				{Op(Store), F(None), Int64(10), r(Reg(1))},
+				{Op(PrintLn), F(Int), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"10\n",
 		},
 		{
-			// PrintLn ImmediateInt
+			// PrintLn ImmI
 			ByteCode{
-				{Op(PrintLn), F(ImmediateInt), Int64(10)},
+				{Op(PrintLn), F(ImmI), Int64(10)},
 				{Op(Exit)},
 			},
 			"10\n",
@@ -984,16 +984,16 @@ func Test_PrintLn(t *testing.T) {
 		{
 			// PrintLn Float
 			ByteCode{
-				{Op(Store), F(None), Float64(10), R(Reg(1))},
-				{Op(PrintLn), F(Float), R(Reg(1))},
+				{Op(Store), F(None), Float64(10), r(Reg(1))},
+				{Op(PrintLn), F(Float), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"10\n",
 		},
 		{
-			// PrintLn ImmediateFloat
+			// PrintLn ImmF
 			ByteCode{
-				{Op(PrintLn), F(ImmediateFloat), Float64(10)},
+				{Op(PrintLn), F(ImmF), Float64(10)},
 				{Op(Exit)},
 			},
 			"10\n",
@@ -1001,19 +1001,19 @@ func Test_PrintLn(t *testing.T) {
 		{
 			// PrintLn Bool
 			ByteCode{
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(Store), F(None), Boolean(true), R(Reg(2))},
-				{Op(PrintLn), F(Bool), R(Reg(1))},
-				{Op(PrintLn), F(Bool), R(Reg(2))},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(Store), F(None), Boolean(true), r(Reg(2))},
+				{Op(PrintLn), F(Bool), r(Reg(1))},
+				{Op(PrintLn), F(Bool), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"false\ntrue\n",
 		},
 		{
-			// PrintLn ImmediateBool
+			// PrintLn ImmB
 			ByteCode{
-				{Op(PrintLn), F(ImmediateBool), Boolean(false)},
-				{Op(PrintLn), F(ImmediateBool), Boolean(true)},
+				{Op(PrintLn), F(ImmB), Boolean(false)},
+				{Op(PrintLn), F(ImmB), Boolean(true)},
 				{Op(Exit)},
 			},
 			"false\ntrue\n",
@@ -1026,10 +1026,10 @@ func Test_Load(t *testing.T) {
 		{
 			// Load from Ptr
 			ByteCode{
-				{Op(Store), F(None), R(Reg(9)), R(Reg(1))},
-				{Op(Store), F(None), Int64(3), R(Reg(9))},
-				{Op(Load), F(Ptr), R(Reg(2)), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), r(Reg(9)), r(Reg(1))},
+				{Op(Store), F(None), Int64(3), r(Reg(9))},
+				{Op(Load), F(Ptr), r(Reg(2)), r(Reg(1))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"3",
@@ -1038,8 +1038,8 @@ func Test_Load(t *testing.T) {
 			// Load from Stack
 			ByteCode{
 				{Op(Store), F(SP), Int64(3)},
-				{Op(Load), F(SP), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(1))},
+				{Op(Load), F(SP), r(Reg(1))},
+				{Op(Print), F(Int), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"3",
@@ -1052,24 +1052,24 @@ func Test_Store(t *testing.T) {
 		{
 			// Store bytes in register
 			ByteCode{
-				{Op(Store), F(None), Int64(1), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(1))},
+				{Op(Store), F(None), Int64(1), r(Reg(1))},
+				{Op(Print), F(Int), r(Reg(1))},
 				{Op(Exit)},
 			},
 			"1",
 		},
 		{
-			// Store bytes in stack from Immediate
+			// Store bytes in stack from Imm
 			ByteCode{
 				{Op(Store), F(SP), Int64(1)},
 				{Op(Store), F(SP), Int64(2)},
 				{Op(Store), F(SP), Int64(3)},
-				{Op(Load), F(SP), R(Reg(1))},
-				{Op(Load), F(SP), R(Reg(2))},
-				{Op(Load), F(SP), R(Reg(3))},
-				{Op(Print), F(Int), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(3))},
+				{Op(Load), F(SP), r(Reg(1))},
+				{Op(Load), F(SP), r(Reg(2))},
+				{Op(Load), F(SP), r(Reg(3))},
+				{Op(Print), F(Int), r(Reg(1))},
+				{Op(Print), F(Int), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(3))},
 				{Op(Exit)},
 			},
 			"321",
@@ -1077,10 +1077,10 @@ func Test_Store(t *testing.T) {
 		{
 			// Store bytes in stack from Reg
 			ByteCode{
-				{Op(Store), F(None), Int64(1), R(Reg(1))},
-				{Op(Store), F(SPR), R(Reg(1))},
-				{Op(Load), F(SP), R(Reg(2))},
-				{Op(Print), F(Int), R(Reg(2))},
+				{Op(Store), F(None), Int64(1), r(Reg(1))},
+				{Op(Store), F(SPR), r(Reg(1))},
+				{Op(Load), F(SP), r(Reg(2))},
+				{Op(Print), F(Int), r(Reg(2))},
 				{Op(Exit)},
 			},
 			"1",
@@ -1091,13 +1091,13 @@ func Test_Store(t *testing.T) {
 func Test_JMP(t *testing.T) {
 	test([]tcase{
 		{
-			// JMP Immediate
+			// JMP Imm
 			ByteCode{
-				{Op(JMP), F(Immediate), Uint64(2)},
-				{Op(Print), F(ImmediateInt), Int64(1)},
-				{Op(Print), F(ImmediateInt), Int64(2)},
-				{Op(JMP), F(Immediate), Uint64(5)},
-				{Op(Print), F(ImmediateInt), Int64(1)},
+				{Op(JMP), F(Imm), Uint64(2)},
+				{Op(Print), F(ImmI), Int64(1)},
+				{Op(Print), F(ImmI), Int64(2)},
+				{Op(JMP), F(Imm), Uint64(5)},
+				{Op(Print), F(ImmI), Int64(1)},
 				{Op(Exit)},
 			},
 			"2",
@@ -1105,13 +1105,13 @@ func Test_JMP(t *testing.T) {
 		{
 			// JMP Reg
 			ByteCode{
-				{Op(Store), F(None), Uint64(4), R(Reg(1))},
-				{Op(Store), F(None), Uint64(7), R(Reg(2))},
-				{Op(JMP), F(None), R(Reg(1))},
-				{Op(Print), F(ImmediateInt), Int64(1)},
-				{Op(Print), F(ImmediateInt), Int64(2)},
-				{Op(JMP), F(None), R(Reg(2))},
-				{Op(Print), F(ImmediateInt), Int64(1)},
+				{Op(Store), F(None), Uint64(4), r(Reg(1))},
+				{Op(Store), F(None), Uint64(7), r(Reg(2))},
+				{Op(JMP), F(None), r(Reg(1))},
+				{Op(Print), F(ImmI), Int64(1)},
+				{Op(Print), F(ImmI), Int64(2)},
+				{Op(JMP), F(None), r(Reg(2))},
+				{Op(Print), F(ImmI), Int64(1)},
 				{Op(Exit)},
 			},
 			"2",
@@ -1122,15 +1122,29 @@ func Test_JMP(t *testing.T) {
 func Test_JMPEQ(t *testing.T) {
 	test([]tcase{
 		{
-			// print reg 1
+			// ImmB
 			ByteCode{
-				{Op(Store), F(None), Boolean(true), R(Reg(1))},
-				{Op(JMPEQ), F(ImmediateBool), Uint64(3), Boolean(true), R(Reg(1))},
-				{Op(Print), F(ImmediateInt), Int64(1)},
-				{Op(Print), F(ImmediateInt), Int64(2)},
-				{Op(Store), F(None), Boolean(false), R(Reg(1))},
-				{Op(JMPEQ), F(ImmediateBool), Uint64(7), Boolean(false), R(Reg(1))},
-				{Op(Print), F(ImmediateInt), Int64(1)},
+				{Op(Store), F(None), Boolean(true), r(Reg(1))},
+				{Op(JMPEQ), F(ImmB), Uint64(3), Boolean(true), r(Reg(1))},
+				{Op(Print), F(ImmI), Int64(1)},
+				{Op(Print), F(ImmI), Int64(2)},
+				{Op(Store), F(None), Boolean(false), r(Reg(1))},
+				{Op(JMPEQ), F(ImmB), Uint64(7), Boolean(false), r(Reg(1))},
+				{Op(Print), F(ImmI), Int64(1)},
+				{Op(Exit)},
+			},
+			"2",
+		},
+		{
+			// ImmI
+			ByteCode{
+				{Op(Store), F(None), Int64(2), r(Reg(1))},
+				{Op(JMPEQ), F(ImmI), Uint64(3), Int64(2), r(Reg(1))},
+				{Op(Print), F(ImmI), Int64(1)},
+				{Op(Print), F(ImmI), Int64(2)},
+				{Op(Store), F(None), Int64(3), r(Reg(1))},
+				{Op(JMPEQ), F(ImmI), Uint64(7), Uint64(3), r(Reg(1))},
+				{Op(Print), F(ImmI), Int64(1)},
 				{Op(Exit)},
 			},
 			"2",

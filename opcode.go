@@ -9,19 +9,37 @@ type Reg uint64
 
 const (
 	None Funct = iota
-	Immediate
+	Imm
 	Int
-	ImmediateInt
-	IntImmediate
+	ImmI
+	IImm
 	Float
-	ImmediateFloat
-	FloatImmediate
+	ImmF
+	FImm
 	Bool
-	ImmediateBool
+	ImmB
 	Ptr
 	SP
 	SPR
 )
+
+var functs = map[Funct]string {
+	None: "",
+	Imm: "Imm",
+	Int: "Int",
+	ImmI: "ImmI",
+	IImm: "IImm",
+	Float: "Float",
+	ImmF: "ImmF",
+	FImm: "FImm",
+	Bool: "Bool",
+	ImmB: "ImmB",
+	Ptr: "Ptr",
+	SP: "SP",
+	SPR: "SPR",
+}
+
+var __ [8]byte
 
 const (
 	NoOp Opcode = iota
@@ -52,9 +70,51 @@ const (
 
 	JMP
 	JMPEQ
+	JMPNEQ
 
 	Exit
 )
+
+var opcodes = map[Opcode]string {
+	NoOp: "NoOp",
+	And: "And",
+	Or: "Or",
+	Not: "Not",
+	Add: "Add",
+	Sub: "Sub",
+	Mul: "Mul",
+	Quo: "Quo",
+	Pow: "Pow",
+	Rem: "Rem",
+	Eq: "Eq",
+	NEq: "NEq",
+	LT: "LT",
+	LTE: "LTE",
+	GT: "GT",
+	GTE: "GTE",
+	Print: "Print",
+	PrintLn: "PrintLn",
+	Load: "Load",
+	Store: "Store",
+	JMP: "JMP",
+	JMPEQ: "JMPEQ",
+	JMPNEQ: "JMPNEQ",
+	Exit: "Exit",
+}
+
+func (f Funct) String() string {
+	if n, ok := functs[f]; ok {
+		return n
+	}
+	panic("func string not found")
+}
+
+func (o Opcode) String() string {
+	if n, ok := opcodes[o]; ok {
+		return n
+	}
+	panic("opcode string not found")
+}
 
 func Op(v Opcode) [8]byte {
 	return Uint64(uint64(v))
@@ -62,7 +122,7 @@ func Op(v Opcode) [8]byte {
 func F(v Funct) [8]byte {
 	return Uint64(uint64(v))
 }
-func R(v Reg) [8]byte {
+func r(v Reg) [8]byte {
 	return Uint64(uint64(v))
 }
 func Uint64(v uint64) [8]byte {
