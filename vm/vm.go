@@ -1,4 +1,4 @@
-package protovm
+package vm
 
 import (
 	"errors"
@@ -70,7 +70,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 					} else if o == uint64(Exit) {
 						return nil
 					} else {
-						return errors.New("unhandled op")
+						return errors.New("unhandled Op")
 					}
 				} else {
 					if o == uint64(Load) {
@@ -435,6 +435,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 					}
 				} else {
 					if o == uint64(NoOp) {
+						vm.pc++
 						continue
 					} else if o == uint64(And) {
 						switch Funct(*(*uint64)(unsafe.Pointer(&i[1]))) {

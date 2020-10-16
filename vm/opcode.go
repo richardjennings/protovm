@@ -1,4 +1,9 @@
-package protovm
+package vm
+
+import (
+	"fmt"
+	"unsafe"
+)
 
 // Operations
 type Opcode uint64
@@ -106,10 +111,39 @@ func (f Funct) String() string {
 	}
 	panic("func string not found")
 }
-
 func (o Opcode) String() string {
 	if n, ok := opcodes[o]; ok {
 		return n
 	}
 	panic("opcode string not found")
+}
+func (b ByteCode) String() string {
+	s := ""
+	for i, bc := range b {
+		s += fmt.Sprintf("%d %d %d %d %d %d\n", i, bc[0], bc[1], bc[2], bc[3], bc[4])
+	}
+	return s
+}
+
+
+func Op(v Opcode) [8]byte {
+	return Uint64(uint64(v))
+}
+func F(v Funct) [8]byte {
+	return Uint64(uint64(v))
+}
+func R(v Reg) [8]byte {
+	return Uint64(uint64(v))
+}
+func Uint64(v uint64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func Int64(v int64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func Float64(v float64) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
+}
+func Boolean(v bool) [8]byte {
+	return *(*[8]byte)(unsafe.Pointer(&v))
 }
