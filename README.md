@@ -1,22 +1,20 @@
-# ProtoVM
+# Proto
+
+# VM
 
 ## About
 
-Prototype VM for Elodie.
+Prototype VM for use as a backend to the Elodie programming language.
 
 ```example/fib35recursive/main.go``` contains a handcrafted recursive fib 35 implementation
 used to ballpark VM performance.
 
 Having tried a couple of different methods for op selection / handling, I found a manually 
-implemented search tree with if / else to be the fastest. Go 1.x does not provide any mechanism to jump dynamically,
-so techniques such as Computed Goto can not be applied.
-
-## Test
-
-```$ go test -v ./...```
+implemented search tree with if / else to be the fastest.    
+Go 1.x does not provide any mechanism to jump dynamically, so techniques such as Computed Goto cannot be applied.
 
 ## Benchmarks
-Benchmarks currently include a Fib recursive implementation using the ASM Builder for a number of n values.    
+Benchmarks currently include a Fib recursive implementation using a number of n values.    
 The results on my system look like:
 ```
 goos: darwin
@@ -36,8 +34,8 @@ $ go build example/fib35recursive/main.go
 $ time ./main
 9227465
 
-real    0m1.194s
-user    0m1.190s
+real    0m1.156s
+user    0m1.153s
 sys     0m0.004s
 ```
 
@@ -52,19 +50,8 @@ user    0m1.374s
 sys     0m0.018s
 ```
 
-## ASM
-
-A Builder is included in the asm package to construct the bytecode format expected by the VM programmatically.
-
-```
-	b := asm.NewBuilder()
-	// add a comment for the proceeding instruction
-	b.Comment("print immediate int 1")
-	// adds a print immmediate int 1 instruction
-	b.Add(p.PrintLn, p.ImmI, int64(1))
-	// end program
-	b.Add(p.Exit)
-```
+The equivalent Go implementation completes in around 0.07 seconds on my system. Hopefully an x86_64 backend for Elodie
+will eventually be able to compete with Go, C and Rust performance. One day.
 
 
 ## Experiments
@@ -87,7 +74,7 @@ for {
 ```
 This worked out at around 2.6 seconds.
 
-Using a select case in a for loop.    
+Using select case in a for loop.    
 Something like:
 ```
 for {
@@ -102,3 +89,26 @@ for {
 }
 ```
 This worked out at around 1.35 seconds.
+
+
+# ASM
+
+## About
+
+The asm package is intended to provide assembly parsing and programmatic construction of Proto VM ByteCode.   
+
+A Builder is included in the asm package to construct the bytecode format expected by the VM.
+
+```
+	b := asm.NewBuilder()
+	// add a comment for the proceeding instruction
+	b.Comment("print immediate int 1")
+	// adds a print immmediate int 1 instruction
+	b.Add(p.PrintLn, p.ImmI, int64(1))
+	// end program
+	b.Add(p.Exit)
+	
+	// print out asm
+	fmt.Println(b)
+```
+

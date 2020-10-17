@@ -1222,7 +1222,7 @@ func Test_UnhandledOp(t *testing.T) {
 	}
 }
 
-/*
+
 func BenchmarkFibRecursive_0(b *testing.B) {
 	benchmarkFibRecursive(0, "0\n", b)
 }
@@ -1248,63 +1248,31 @@ func BenchmarkFibRecursive_35(b *testing.B) {
 }
 
 func benchmarkFibRecursive(n int, e string, b *testing.B) {
-	a := asm.NewBuilder()
-	a.Comment("add return position to stack")
-	a.Add(Store, SP, "END")
-	a.Comment("set function arg $n as asm.R0")
-	a.Add(Store, None, uint64(n), asm.R(0))
-	a.Comment("call fib function")
-	a.Add(JMP, Imm, "fib($n)")
-	a.Label("END")
-	a.Add(PrintLn, Int, asm.R(1))
-	a.Exit()
-	a.Label("fib($n)")
-	a.Comment("jump to next if condition if $n != 0")
-	a.Add(JMPNEQ, ImmI, "if $n == 1", int64(0), asm.R(0))
-	a.Comment("set return value to 0")
-	a.Add(Store, None, uint64(0), asm.R(1))
-	a.Comment("jump to return address")
-	a.Add(JMP, SP)
-	//
-	a.Label("if $n == 1")
-	a.Comment("jump to recursive calls if $n != 1")
-	a.Add(JMPNEQ, ImmI, "fib($n - 1)", int64(1), asm.R(0))
-	a.Comment("set return value to 1")
-	a.Add(Store, None, uint64(1), asm.R(1))
-	a.Comment("jump to return address")
-	a.Add(JMP, SP)
-	//
-	a.Label("fib($n - 1)")
-	a.Comment("push n to stack to recover after recursive call")
-	a.Add(Store, SPR, asm.R(0))
-	a.Comment("$n - 1 => asm.R0")
-	a.Add(Sub, IImm, asm.R(0), int64(1), asm.R(0))
-	a.Comment("push return address to stack")
-	a.Add(Store, SP, "fib($n - 2)")
-	a.Comment("goto recursive function call")
-	a.Add(JMP, Imm, "fib($n)") // return value from call should be in asm.R1
-	//
-	a.Label("fib($n - 2)")
-	a.Comment("pop $n off of stack into asm.R0")
-	a.Add(Load, SP, asm.R(0))
-	a.Comment("push previous result back asm.R1 onto the stack")
-	a.Add(Store, SPR, asm.R(1))
-	a.Comment("$n - 2 => asm.R0")
-	a.Add(Sub, IImm, asm.R(0), int64(2), asm.R(0))
-	a.Comment("push return address to stack")
-	a.Add(Store, SP, "fib + fib")
-	a.Comment("goto recursive function call")
-	a.Add(JMP, Imm, "fib($n)")
-	//
-	a.Label("fib + fib")
-	a.Comment("pop fib($n-1) result into asm.R2 => fib($n-2) result is in asm.R1")
-	a.Add(Load, SP, asm.R(2))
-	a.Comment("add asm.R1 asm.R2 into asm.R1")
-	a.Add(Add, Int, asm.R(1), asm.R(2), asm.R(1))
-	a.Comment("jump to return address")
-	a.Add(JMP, SP)
-
-	bc := a.BC()
+	bc := ByteCode{
+		{Op(Store), F(SP), Uint64(3)}, // add end to stack
+		{Op(Store), F(None), Int64(int64(n)), R(Reg(0))},
+		{Op(JMP), F(Imm), Uint64(5)},
+		{Op(PrintLn), F(Int), R(1)}, //end
+		{Op(Exit)},
+		{Op(JMPNEQ), F(ImmI), Uint64(8), Int64(0), R(0)},
+		{Op(Store), F(None), Uint64(0), R(1)},
+		{Op(JMP), F(SP)},
+		{Op(JMPNEQ), F(ImmI), Uint64(11), Uint64(1), R(0)},
+		{Op(Store), F(None), Uint64(1), R(1)},
+		{Op(JMP), F(SP)},
+		{Op(Store), F(SPR), R(0)},
+		{Op(Sub), F(IImm), R(0), Uint64(1), R(0)},
+		{Op(Store), F(SP), Uint64(15)},
+		{Op(JMP), F(Imm), Uint64(5)}, // return value from call should be in asm.R1
+		{Op(Load), F(SP), R(0)},
+		{Op(Store), F(SPR), R(1)},
+		{Op(Sub), F(IImm), R(0), Int64(2), R(0)},
+		{Op(Store), F(SP), Uint64(20)},
+		{Op(JMP), F(Imm), Uint64(5)},
+		{Op(Load), F(SP), R(2)},
+		{Op(Add), F(Int), R(1), R(2), R(1)},
+		{Op(JMP), F(SP)},
+	}
 
 	for i := 0; i < b.N; i++ {
 		buf := bytes.Buffer{}
@@ -1319,4 +1287,3 @@ func benchmarkFibRecursive(n int, e string, b *testing.B) {
 	}
 
 }
- */
