@@ -1,8 +1,9 @@
 package asm
 
 import (
+	"errors"
 	"fmt"
-	vm "github.com/richardjennings/proto/vm"
+	"github.com/richardjennings/protovm/vm"
 )
 
 // An easier way to construct bytecode format programmatically, with labeled jumps to negate
@@ -54,7 +55,7 @@ func NewBuilder() *Builder {
 	return &b
 }
 
-func (b *Builder) Add(o vm.Opcode, f vm.Funct, r ...interface{}) {
+func (b *Builder) Add(o vm.Opcode, f vm.Funct, r ...interface{}) error {
 	var l line
 	switch len(r) {
 	case 0:
@@ -66,9 +67,10 @@ func (b *Builder) Add(o vm.Opcode, f vm.Funct, r ...interface{}) {
 	case 3:
 		l = line{o, f, r[0], r[1], r[2]}
 	default:
-		panic("too many arguments")
+		return errors.New("too many arguments")
 	}
 	b.asm = append(b.asm, l)
+	return nil
 }
 
 func (b *Builder) Label(l string) {
@@ -84,7 +86,7 @@ func (b *Builder) Exit() {
 	b.asm = append(b.asm, line{o: vm.Exit})
 }
 
-func (b *Builder) BC() vm.ByteCode {
+func (b *Builder) BC() (vm.ByteCode, error) {
 	for _, v := range b.asm {
 		inst := vm.Inst{}
 		inst[0] = vm.Op(v.o)
@@ -96,7 +98,7 @@ func (b *Builder) BC() vm.ByteCode {
 	}
 	for l, positions := range b.labelledInsts {
 		if _, ok := b.labels[l]; !ok {
-			panic(fmt.Sprintf("label %s not found", l))
+			return nil, fmt.Errorf("label %s not found", l)
 		}
 		for _, pos := range positions {
 			b.bc[pos.i][pos.j] = vm.Uint64(b.labels[l])
@@ -104,7 +106,7 @@ func (b *Builder) BC() vm.ByteCode {
 	}
 	bc := b.bc
 	b.bc = vm.ByteCode{}
-	return bc
+	return bc, nil
 }
 
 func (b *Builder) operand(a interface{}, inst *vm.Inst, i int) {

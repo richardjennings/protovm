@@ -47,7 +47,6 @@ func Test_NoOp(t *testing.T) {
 	}, t)
 }
 
-
 func Test_And(t *testing.T) {
 	test([]tcase{
 		{
@@ -1038,17 +1037,6 @@ func Test_PrintLn(t *testing.T) {
 func Test_Load(t *testing.T) {
 	test([]tcase{
 		{
-			// Load from Ptr
-			ByteCode{
-				{Op(Store), F(None), R(Reg(9)), R(Reg(1))},
-				{Op(Store), F(None), Int64(3), R(Reg(9))},
-				{Op(Load), F(Ptr), R(Reg(2)), R(Reg(1))},
-				{Op(Print), F(Int), R(Reg(2))},
-				{Op(Exit)},
-			},
-			"3",
-		},
-		{
 			// Load from Stack
 			ByteCode{
 				{Op(Store), F(SP), Int64(3)},
@@ -1221,7 +1209,6 @@ func Test_UnhandledOp(t *testing.T) {
 		t.Error("expected error, got none")
 	}
 }
-
 
 func BenchmarkFibRecursive_0(b *testing.B) {
 	benchmarkFibRecursive(0, "0\n", b)

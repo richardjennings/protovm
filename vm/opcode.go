@@ -5,10 +5,26 @@ import (
 	"unsafe"
 )
 
-// Operations
+// Opcode represents an Op
 type Opcode uint64
+
+// Funct defines types of Instruction format
 type Funct uint64
+
+// Reg is a general purpose Register
 type Reg uint64
+
+// ByteCode is a slice of instructions
+type ByteCode []Inst
+
+// Inst represents an instruction
+type Inst [5][8]byte
+
+// Registers is defined as 20 8 byte arrays
+type Registers [20][8]byte
+
+// Stack defines the stack size
+type Stack [100][8]byte
 
 const (
 	None Funct = iota
@@ -21,7 +37,6 @@ const (
 	FImm
 	Bool
 	ImmB
-	Ptr
 	SP
 	SPR
 )
@@ -37,7 +52,6 @@ var functs = map[Funct]string{
 	FImm:  "FImm",
 	Bool:  "Bool",
 	ImmB:  "ImmB",
-	Ptr:   "Ptr",
 	SP:    "SP",
 	SPR:   "SPR",
 }
@@ -109,13 +123,13 @@ func (f Funct) String() string {
 	if n, ok := functs[f]; ok {
 		return n
 	}
-	panic("func string not found")
+	return "ERROR: func string not found"
 }
 func (o Opcode) String() string {
 	if n, ok := opcodes[o]; ok {
 		return n
 	}
-	panic("opcode string not found")
+	return "ERROR: opcode string not found"
 }
 func (b ByteCode) String() string {
 	s := ""
@@ -124,7 +138,6 @@ func (b ByteCode) String() string {
 	}
 	return s
 }
-
 
 func Op(v Opcode) [8]byte {
 	return Uint64(uint64(v))
