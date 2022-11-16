@@ -72,6 +72,12 @@ const (
 	Or
 	Not
 
+	Band
+	Bor
+	Bnot
+	Bxor
+	Bclr
+
 	Add
 	Sub
 	Mul
@@ -104,6 +110,11 @@ var opcodes = map[Opcode]string{
 	And:     "And",
 	Or:      "Or",
 	Not:     "Not",
+	Band:    "Band",
+	Bor:     "Bor",
+	Bnot:    "Bnot",
+	Bxor:    "Bxor",
+	Bclr:    "Bclr",
 	Add:     "Add",
 	Sub:     "Sub",
 	Mul:     "Mul",

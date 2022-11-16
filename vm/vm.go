@@ -57,6 +57,27 @@ func (vm *VM) Exec(bc ByteCode) error {
 		case Not:
 			*(*bool)(unsafe.Pointer(&vm.r[i.Z])) = !*(*bool)(unsafe.Pointer(&vm.r[i.X]))
 
+		case Band:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = *(*uint64)(unsafe.Pointer(&vm.r[i.X])) & *(*uint64)(unsafe.Pointer(&vm.r[i.Y]))
+			}
+		case Bor:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = *(*uint64)(unsafe.Pointer(&vm.r[i.X])) | *(*uint64)(unsafe.Pointer(&vm.r[i.Y]))
+			}
+		case Bxor:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = *(*uint64)(unsafe.Pointer(&vm.r[i.X])) ^ *(*uint64)(unsafe.Pointer(&vm.r[i.Y]))
+			}
+		case Bnot:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = ^*(*uint64)(unsafe.Pointer(&vm.r[i.X]))
+			}
+
 		case Add:
 			switch i.F {
 			case None:
@@ -349,7 +370,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 		case Print:
 			switch i.F {
 			case None:
-				_, _ = fmt.Fprint(vm.w, &vm.r[i.X])
+				_, _ = fmt.Fprint(vm.w, vm.r[i.X])
 			case Int:
 				_, _ = fmt.Fprint(vm.w, *(*int64)(unsafe.Pointer(&vm.r[i.X])))
 			case ImmI:

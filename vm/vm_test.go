@@ -129,6 +129,76 @@ func Test_Not(t *testing.T) {
 	}, t)
 }
 
+func Test_Band(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b1011, Y: R(Reg(1))},
+				{O: Store, F: None, X: 0b0011, Y: R(Reg(2))},
+				{O: Band, F: None, X: R(Reg(1)), Y: R(Reg(2)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(2))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[11 0 0 0 0 0 0 0][3 0 0 0 0 0 0 0][3 0 0 0 0 0 0 0]",
+		},
+	}, t)
+}
+
+func Test_Bor(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b1011, Y: R(Reg(1))},
+				{O: Store, F: None, X: 0b0011, Y: R(Reg(2))},
+				{O: Bor, F: None, X: R(Reg(1)), Y: R(Reg(2)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(2))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[11 0 0 0 0 0 0 0][3 0 0 0 0 0 0 0][11 0 0 0 0 0 0 0]",
+		},
+	}, t)
+}
+
+func Test_Bnot(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b1011, Y: R(Reg(1))},
+				{O: Bnot, F: None, X: R(Reg(1)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[11 0 0 0 0 0 0 0][244 255 255 255 255 255 255 255]",
+		},
+	}, t)
+}
+
+func Test_Bxor(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b1011, Y: R(Reg(1))},
+				{O: Store, F: None, X: 0b0011, Y: R(Reg(2))},
+				{O: Bxor, F: None, X: R(Reg(1)), Y: R(Reg(2)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(2))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[11 0 0 0 0 0 0 0][3 0 0 0 0 0 0 0][8 0 0 0 0 0 0 0]",
+		},
+	}, t)
+}
+
 func Test_Add(t *testing.T) {
 	test([]tcase{
 		{
