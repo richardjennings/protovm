@@ -199,6 +199,42 @@ func Test_Bxor(t *testing.T) {
 	}, t)
 }
 
+func Test_ShiftL(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b00110101, Y: R(Reg(1))},
+				{O: Store, F: None, X: 2, Y: R(Reg(2))},
+				{O: ShiftL, F: None, X: R(Reg(1)), Y: R(Reg(2)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(2))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[53 0 0 0 0 0 0 0][2 0 0 0 0 0 0 0][212 0 0 0 0 0 0 0]",
+		},
+	}, t)
+}
+
+func Test_ShiftR(t *testing.T) {
+	test([]tcase{
+		{
+			// Not
+			ByteCode{
+				{O: Store, F: None, X: 0b00110101, Y: R(Reg(1))},
+				{O: Store, F: None, X: 2, Y: R(Reg(2))},
+				{O: ShiftR, F: None, X: R(Reg(1)), Y: R(Reg(2)), Z: R(Reg(3))},
+				{O: Print, F: None, X: R(Reg(1))},
+				{O: Print, F: None, X: R(Reg(2))},
+				{O: Print, F: None, X: R(Reg(3))},
+				{O: Exit},
+			},
+			"[53 0 0 0 0 0 0 0][2 0 0 0 0 0 0 0][13 0 0 0 0 0 0 0]",
+		},
+	}, t)
+}
+
 func Test_Add(t *testing.T) {
 	test([]tcase{
 		{

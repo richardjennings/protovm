@@ -76,7 +76,9 @@ const (
 	Bor
 	Bnot
 	Bxor
-	Bclr
+
+	ShiftL
+	ShiftR
 
 	Add
 	Sub
@@ -114,7 +116,8 @@ var opcodes = map[Opcode]string{
 	Bor:     "Bor",
 	Bnot:    "Bnot",
 	Bxor:    "Bxor",
-	Bclr:    "Bclr",
+	ShiftL:  "Shiftl",
+	ShiftR:  "Shiftr",
 	Add:     "Add",
 	Sub:     "Sub",
 	Mul:     "Mul",

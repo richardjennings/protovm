@@ -62,10 +62,12 @@ The ISA includes the following OPs:
 And      - [None|Bool|ImmB],                     R(Z) = X && Y
 Or       - [None|Bool|ImmB],                     R(Z) = X || Y
 Not      - [],                                   R(Z) = ! R(X)
-Band     - [None]                                R(Z) = X & Y
-Bor      - [None]                                R(Z) = X | Y
-Bnot     - [None]                                R(Z) = ^X
-Bxor     - [None]                                R(Z) = X^Y
+Band     - [None]                                R(Z) = R(X) & R(Y)
+Bor      - [None]                                R(Z) = R(X) | R(Y)
+Bnot     - [None]                                R(Z) = ^R(X)
+Bxor     - [None]                                R(Z) = R(X)^R(Y)
+ShiftL   - [None]                                R(Z) = R(X)<<R(Y)
+ShiftR   - [None]                                R(Z) = R(X)>>R(Y)
 Add      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X + Y
 Sub      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X +- Y
 Mul      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X * Y

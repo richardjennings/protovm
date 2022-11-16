@@ -77,7 +77,16 @@ func (vm *VM) Exec(bc ByteCode) error {
 			case None:
 				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = ^*(*uint64)(unsafe.Pointer(&vm.r[i.X]))
 			}
-
+		case ShiftL:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = *(*uint64)(unsafe.Pointer(&vm.r[i.X])) << *(*uint64)(unsafe.Pointer(&vm.r[i.Y]))
+			}
+		case ShiftR:
+			switch i.F {
+			case None:
+				*(*uint64)(unsafe.Pointer(&vm.r[i.Z])) = *(*uint64)(unsafe.Pointer(&vm.r[i.X])) >> *(*uint64)(unsafe.Pointer(&vm.r[i.Y]))
+			}
 		case Add:
 			switch i.F {
 			case None:
