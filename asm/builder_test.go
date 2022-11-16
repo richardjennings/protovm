@@ -18,9 +18,9 @@ func TestBuilder(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := vm.Uint64(3)
-	if bc[1][2] != vm.Uint64(3) {
-		t.Errorf("expected jump offset %s got %s", expected, bc[1][2])
+	expected := 3
+	if bc[1].X != 3 {
+		t.Errorf("expected jump offset %d got %d", expected, bc[1].X)
 	}
 
 	buf := bytes.Buffer{}

@@ -20,7 +20,7 @@ time ./main
          2 JMP      Imm      fib(n)                     //call fib function
 END:
          3 PrintLn  Int      r1                         //
-         4 Exit              <nil>    <nil>    <nil>    //
+         4 Exit                                         //
 fib(n):
          5 JMPNEQ   ImmI     if n == 1 0        r0       //jump to next if condition if n != 0
          6 Store             0        r1                //set return value to 0
@@ -46,7 +46,7 @@ fib + fib:
         22 JMP      SP                                  //jump to return address
 
 9227465
-./main  0.66s user 0.00s system 99% cpu 0.670 total
+./main  0.71s user 0.01s system 99% cpu 0.716 total
 ```
 
 I did have an assembler written for this which I would like to include at some point.
@@ -59,32 +59,45 @@ intermediate language.
 
 The ISA includes the following OPs:
 ```
-And      - [Bool|ImmB],                     R(Z) = X && Y
-Or       - [Bool|ImmB],                     R(Z) = X || Y
-Not      - [],                              R(Z) = ! R(X)
-Add      - [Int|ImmI|Float|ImmF],           R(Z) = X + Y
-Sub      - [Int|ImmI|Float|ImmF],           R(Z) = X +- Y
-Mul      - [Int|ImmI|Float|ImmF],           R(Z) = X * Y
-Quo      - [Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X / Y
-Pow      - [Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = POW(X, Y)
-Rem      - [Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X % Y
-Eq       - [Int|ImmI|Float|ImmF|Bool|ImmB], R(Z) = X == Y
-NEq      - [Int|ImmI|Float|ImmF|Bool|ImmB], R(Z) = X != Y
-LT       - [Int|ImmI|Float|ImmF],           R(Z) = X < Y
-LTE      - [Int|ImmI|Float|ImmF],           R(Z) = X <= Y      
-GT       - [Int|ImmI|Float|ImmF],           R(Z) = X > Y
-GTE      - [Int|ImmI|Float|ImmF],           R(Z) = X >= Y  
-Print    - [Int|ImmI|Float|ImmF|Bool|ImmB], PRINT( X )
-PrintLn  - [Int|ImmI|Float|ImmF|Bool|ImmB], PRINTLN( X )
-Load     - [SP],                            R(X) = LOAD(SP)
-Store    - [None|SP|SPR],                   R(X) = Y, MEM[SP] = X; SP++; MEM[SP] = R(X)
-JMP      - [None|Imm|SP],                   PC = R(X); PC = X; PC = MEM[SP]
-JMPEQ    - [ImmB|ImmI],                     IF Y == Z THEN PC = X; 
-JMPNEQ   - [ImmB|ImmI],                     IF Y != Z THEN PC = X; 
-Exit     - [],                              EXIT                  
+And      - [None|Bool|ImmB],                     R(Z) = X && Y
+Or       - [None|Bool|ImmB],                     R(Z) = X || Y
+Not      - [],                                   R(Z) = ! R(X)
+Add      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X + Y
+Sub      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X +- Y
+Mul      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X * Y
+Quo      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X / Y
+Pow      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = POW(X, Y)
+Rem      - [None|Int|ImmI|IImm|Float|ImmF|FImm], R(Z) = X % Y
+Eq       - [None|Int|ImmI|Float|ImmF|Bool|ImmB], R(Z) = X == Y
+NEq      - [None|Int|ImmI|Float|ImmF|Bool|ImmB], R(Z) = X != Y
+LT       - [None|Int|ImmI|Float|ImmF],           R(Z) = X < Y
+LTE      - [None|Int|ImmI|Float|ImmF],           R(Z) = X <= Y      
+GT       - [None|Int|ImmI|Float|ImmF],           R(Z) = X > Y
+GTE      - [None|Int|ImmI|Float|ImmF],           R(Z) = X >= Y  
+Print    - [None|Int|ImmI|Float|ImmF|Bool|ImmB], PRINT( X )
+PrintLn  - [None|Int|ImmI|Float|ImmF|Bool|ImmB], PRINTLN( X )
+Load     - [SP],                                 R(X) = LOAD(SP)
+Store    - [None|SP|SPR],                        R(X) = Y, MEM[SP] = X; SP++; MEM[SP] = R(X)
+JMP      - [None|Imm|SP],                        PC = R(X); PC = X; PC = MEM[SP]
+JMPEQ    - [None|ImmB|ImmI],                     IF Y == Z THEN PC = X; 
+JMPNEQ   - [None|ImmB|ImmI],                     IF Y != Z THEN PC = X; 
+Exit     - [],                                   EXIT                  
 ```
 
-An Instruction is defined as `[5][8]byte`. I believe this was to make instruction decoding much easier in the VM.
+An Instruction is defined as:
+```
+type Inst struct {
+	O Opcode
+	F Funct
+	X uint64
+	Y uint64
+	Z uint64
+}
+```
+
+Because `clock cycles` are expensive via the dispatch loop, the instruction is large to prevent needing multiple
+instructions for 64 bit values.
+
 
 The instruction format is:
 

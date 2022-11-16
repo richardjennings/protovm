@@ -83,14 +83,14 @@ func (b *Builder) Comment(c string) {
 }
 
 func (b *Builder) Exit() {
-	b.asm = append(b.asm, line{o: vm.Exit})
+	b.asm = append(b.asm, line{o: vm.Exit, f: vm.None, x: Nil{}, y: Nil{}, z: Nil{}})
 }
 
 func (b *Builder) BC() (vm.ByteCode, error) {
 	for _, v := range b.asm {
 		inst := vm.Inst{}
-		inst[0] = vm.Op(v.o)
-		inst[1] = vm.F(v.f)
+		inst.O = v.o
+		inst.F = v.f
 		b.operand(v.x, &inst, 2)
 		b.operand(v.y, &inst, 3)
 		b.operand(v.z, &inst, 4)
@@ -101,7 +101,13 @@ func (b *Builder) BC() (vm.ByteCode, error) {
 			return nil, fmt.Errorf("label %s not found", l)
 		}
 		for _, pos := range positions {
-			b.bc[pos.i][pos.j] = vm.Uint64(b.labels[l])
+			if pos.j == 2 {
+				b.bc[pos.i].X = b.labels[l]
+			} else if pos.j == 3 {
+				b.bc[pos.i].Y = b.labels[l]
+			} else {
+				b.bc[pos.i].Z = b.labels[l]
+			}
 		}
 	}
 	bc := b.bc
@@ -110,25 +116,32 @@ func (b *Builder) BC() (vm.ByteCode, error) {
 }
 
 func (b *Builder) operand(a interface{}, inst *vm.Inst, i int) {
+	var prop *uint64
+	switch i {
+	case 2:
+		prop = &inst.X
+	case 3:
+		prop = &inst.Y
+	case 4:
+		prop = &inst.Z
+	}
 	switch a := a.(type) {
-	case [8]byte:
-		inst[i] = a
 	case string:
-		inst[i] = [8]byte{}
+		*prop = 0
 		if _, ok := b.labelledInsts[a]; !ok {
 			b.labelledInsts[a] = []pos{}
 		}
 		b.labelledInsts[a] = append(b.labelledInsts[a], pos{len(b.bc), i})
 	case R:
-		inst[i] = vm.Uint64(uint64(a))
+		*prop = uint64(a)
 	case uint64:
-		inst[i] = vm.Uint64(a)
+		*prop = a
 	case int64:
-		inst[i] = vm.Int64(a)
+		*prop = vm.Int64(a)
 	case float64:
-		inst[i] = vm.Float64(a)
+		*prop = vm.Float64(a)
 	case bool:
-		inst[i] = vm.Boolean(a)
+		*prop = vm.Boolean(a)
 	}
 }
 

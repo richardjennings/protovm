@@ -6,10 +6,10 @@ import (
 )
 
 // Opcode represents an Op
-type Opcode uint64
+type Opcode uint8
 
 // Funct defines types of Instruction format
-type Funct uint64
+type Funct uint8
 
 // Reg is a general purpose Register
 type Reg uint64
@@ -18,7 +18,14 @@ type Reg uint64
 type ByteCode []Inst
 
 // Inst represents an instruction
-type Inst [5][8]byte
+// type Inst [5][8]byte
+type Inst struct {
+	O Opcode
+	F Funct
+	X uint64
+	Y uint64
+	Z uint64
+}
 
 // Registers is defined as 20 8 byte arrays
 type Registers [20][8]byte
@@ -134,29 +141,21 @@ func (o Opcode) String() string {
 func (b ByteCode) String() string {
 	s := ""
 	for i, bc := range b {
-		s += fmt.Sprintf("%d %d %d %d %d %d\n", i, bc[0], bc[1], bc[2], bc[3], bc[4])
+		s += fmt.Sprintf("%d %d %d %d %d %d\n", i, bc.O, bc.F, bc.X, bc.Y, bc.Z)
 	}
 	return s
 }
 
-func Op(v Opcode) [8]byte {
-	return Uint64(uint64(v))
+func R(r Reg) uint64 {
+	return uint64(r)
 }
-func F(v Funct) [8]byte {
-	return Uint64(uint64(v))
+
+func Int64(v int64) uint64 {
+	return *(*uint64)(unsafe.Pointer(&v))
 }
-func R(v Reg) [8]byte {
-	return Uint64(uint64(v))
+func Float64(v float64) uint64 {
+	return *(*uint64)(unsafe.Pointer(&v))
 }
-func Uint64(v uint64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Int64(v int64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Float64(v float64) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
-}
-func Boolean(v bool) [8]byte {
-	return *(*[8]byte)(unsafe.Pointer(&v))
+func Boolean(v bool) uint64 {
+	return *(*uint64)(unsafe.Pointer(&v))
 }
