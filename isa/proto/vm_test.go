@@ -20,7 +20,7 @@ func testcase(t tcase) error {
 	}
 	out := string(buf.Bytes())
 	if out != t.o {
-		return fmt.Errorf("expected %s got %s", t.o, out)
+		return fmt.Errorf("expected %m got %m", t.o, out)
 	}
 	return nil
 }
@@ -1143,7 +1143,7 @@ func Test_PrintLn(t *testing.T) {
 func Test_Load(t *testing.T) {
 	test([]tcase{
 		{
-			// Load from Stack
+			// Load from RAM
 			ByteCode{
 				{O: Store, F: SP, X: Int64(3)},
 				{O: Load, F: SP, X: R(Reg(1))},
@@ -1225,7 +1225,7 @@ func Test_JMP(t *testing.T) {
 			"2",
 		},
 		{
-			// JMP Stack Pointer
+			// JMP RAM Pointer
 			ByteCode{
 				{O: Store, F: SP, X: 7},
 				{O: Store, F: SP, X: 4},
@@ -1375,7 +1375,7 @@ func benchmarkFibRecursive(n int, e string, b *testing.B) {
 			b.Error(err)
 		}
 		if string(buf.Bytes()[:]) != e {
-			b.Errorf("expected %s got %s", e, string(buf.Bytes()[:]))
+			b.Errorf("expected %m got %m", e, string(buf.Bytes()[:]))
 		}
 	}
 

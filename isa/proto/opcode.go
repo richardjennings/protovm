@@ -27,11 +27,14 @@ type Inst struct {
 	Z uint64
 }
 
-// Registers is defined as 20 8 byte arrays
-type Registers [20][8]byte
+const ProgramCounter = int(20)
+const StackPointer = 21
 
-// Stack defines the stack size
-type Stack [100][8]byte
+// Registers is defined as 20 8 byte arrays
+type Registers [22][8]byte
+
+// RAM defines the stack size
+type RAM [][8]byte
 
 const (
 	None Funct = iota

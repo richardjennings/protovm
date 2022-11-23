@@ -9,40 +9,44 @@ import (
 
 type (
 	VM struct {
-		w  io.Writer
-		pc uint64
-		sp uint64
-		r  Registers
-		s  Stack
+		w io.Writer
+		r Registers
+		m RAM
 	}
 )
 
 // NewVm Creates a new VM struct
 func NewVm(writer io.Writer) *VM {
-	v := &VM{w: writer}
+	v := &VM{w: writer, m: make(RAM, 2000)}
+	pc := 0
+	sp := 99
+	v.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&pc))
+	v.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&sp))
+
 	return v
 }
 
 // Exec Execute instructions
 func (vm *VM) Exec(bc ByteCode) error {
 	_ = vm.r[len(vm.r)-1] // bounds check elimination
-	_ = vm.s[len(vm.s)-1] // bounds check elimination
+	_ = vm.m[len(vm.m)-1] // bounds check elimination
 
-	// set sp to top of stack
-	vm.sp = uint64(len(vm.s) - 1)
-
+	var tmp uint64
 	var i *Inst
 
 	for {
-		i = &bc[vm.pc]
+		// pull instruction from bytecode at pc position
+		i = &bc[*(*uint64)(unsafe.Pointer(&vm.r[ProgramCounter]))]
+
 		switch i.O {
 
 		case Call:
 			// add return address to stack, jmp to offset
-			npc := vm.pc + 1
-			vm.s[vm.sp] = *(*[8]byte)(unsafe.Pointer(&npc))
-			vm.sp--
-			vm.pc = i.X
+			tmp = *(*uint64)(unsafe.Pointer(&vm.r[ProgramCounter])) + 1
+			vm.m[*(*uint64)(unsafe.Pointer(&vm.r[StackPointer]))] = *(*[8]byte)(unsafe.Pointer(&tmp))
+			tmp = *(*uint64)(unsafe.Pointer(&vm.r[StackPointer])) - 1
+			vm.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&tmp))
+			vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 			continue
 
 		case And:
@@ -422,8 +426,9 @@ func (vm *VM) Exec(bc ByteCode) error {
 		case Load:
 			switch i.F {
 			case SP:
-				vm.sp++
-				vm.r[i.Y] = vm.s[vm.sp]
+				tmp = *(*uint64)(unsafe.Pointer(&vm.r[StackPointer])) + 1
+				vm.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&tmp))
+				vm.r[i.Y] = vm.m[tmp]
 			}
 
 		case Store:
@@ -431,24 +436,27 @@ func (vm *VM) Exec(bc ByteCode) error {
 			case None:
 				vm.r[i.Y] = *(*[8]byte)(unsafe.Pointer(&i.X))
 			case SP:
-				vm.s[vm.sp] = *(*[8]byte)(unsafe.Pointer(&i.X))
-				vm.sp--
+				tmp = *(*uint64)(unsafe.Pointer(&vm.r[StackPointer])) - 1
+				vm.m[tmp+1] = *(*[8]byte)(unsafe.Pointer(&i.X))
+				vm.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&tmp))
 			case SPR:
-				vm.s[vm.sp] = vm.r[i.X]
-				vm.sp--
+				tmp = *(*uint64)(unsafe.Pointer(&vm.r[StackPointer])) - 1
+				vm.m[tmp+1] = vm.r[i.X]
+				vm.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&tmp))
 			}
 
 		case JMP:
 			switch i.F {
 			case None:
-				vm.pc = *(*uint64)(unsafe.Pointer(&vm.r[i.X]))
+				vm.r[ProgramCounter] = vm.r[i.X]
 				continue
 			case Imm:
-				vm.pc = i.X
+				vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 				continue
 			case SP:
-				vm.sp++
-				vm.pc = *(*uint64)(unsafe.Pointer(&vm.s[vm.sp]))
+				tmp = *(*uint64)(unsafe.Pointer(&vm.r[StackPointer])) + 1
+				vm.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&tmp))
+				vm.r[ProgramCounter] = vm.m[tmp]
 				continue
 			}
 
@@ -456,17 +464,17 @@ func (vm *VM) Exec(bc ByteCode) error {
 			switch i.F {
 			case None:
 				if i.Y == *(*uint64)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 			case ImmI:
 				if *(*int64)(unsafe.Pointer(&i.Y)) == *(*int64)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 			case ImmB:
 				if *(*bool)(unsafe.Pointer(&i.Y)) == *(*bool)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 
@@ -476,17 +484,17 @@ func (vm *VM) Exec(bc ByteCode) error {
 			switch i.F {
 			case None:
 				if i.Y != *(*uint64)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 			case ImmI:
 				if *(*int64)(unsafe.Pointer(&i.Y)) != *(*int64)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 			case ImmB:
 				if *(*bool)(unsafe.Pointer(&i.Y)) != *(*bool)(unsafe.Pointer(&vm.r[i.Z])) {
-					vm.pc = i.X
+					vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&i.X))
 					continue
 				}
 			}
@@ -495,12 +503,14 @@ func (vm *VM) Exec(bc ByteCode) error {
 			return nil
 
 		case NoOp:
-			vm.pc++
+			npc := *(*uint64)(unsafe.Pointer(&vm.r[ProgramCounter])) + 1
+			vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&npc))
 			continue
 
 		default:
 			return fmt.Errorf("unhandled OP %d", i.O)
 		}
-		vm.pc++
+		npc := *(*uint64)(unsafe.Pointer(&vm.r[ProgramCounter])) + 1
+		vm.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&npc))
 	}
 }
