@@ -1,4 +1,4 @@
-package asm
+package bc
 
 import (
 	"bytes"

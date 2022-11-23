@@ -66,7 +66,10 @@ var functs = map[Funct]string{
 var __ [8]byte
 
 const (
-	NoOp Opcode = iota
+	Invalid Opcode = iota
+
+	Call
+	NoOp
 
 	And
 	Or
@@ -108,36 +111,46 @@ const (
 )
 
 var opcodes = map[Opcode]string{
-	NoOp:    "NoOp",
-	And:     "And",
-	Or:      "Or",
-	Not:     "Not",
-	Band:    "Band",
-	Bor:     "Bor",
-	Bnot:    "Bnot",
-	Bxor:    "Bxor",
-	ShiftL:  "Shiftl",
-	ShiftR:  "Shiftr",
-	Add:     "Add",
-	Sub:     "Sub",
-	Mul:     "Mul",
-	Quo:     "Quo",
-	Pow:     "Pow",
-	Rem:     "Rem",
-	Eq:      "Eq",
-	NEq:     "NEq",
-	LT:      "LT",
-	LTE:     "LTE",
-	GT:      "GT",
-	GTE:     "GTE",
-	Print:   "Print",
-	PrintLn: "PrintLn",
-	Load:    "Load",
-	Store:   "Store",
-	JMP:     "JMP",
-	JMPEQ:   "JMPEQ",
-	JMPNEQ:  "JMPNEQ",
-	Exit:    "Exit",
+	NoOp:    "noop",
+	Call:    "call",
+	And:     "and",
+	Or:      "or",
+	Not:     "not",
+	Band:    "band",
+	Bor:     "bor",
+	Bnot:    "bnot",
+	Bxor:    "bxor",
+	ShiftL:  "shiftl",
+	ShiftR:  "shiftr",
+	Add:     "add",
+	Sub:     "sub",
+	Mul:     "mul",
+	Quo:     "quo",
+	Pow:     "pow",
+	Rem:     "rem",
+	Eq:      "eq",
+	NEq:     "neq",
+	LT:      "lt",
+	LTE:     "lte",
+	GT:      "gt",
+	GTE:     "gte",
+	Print:   "print",
+	PrintLn: "println",
+	Load:    "load",
+	Store:   "store",
+	JMP:     "jmp",
+	JMPEQ:   "je",
+	JMPNEQ:  "jne",
+	Exit:    "exit",
+}
+
+func GetOpcode(o string) Opcode {
+	for i, v := range opcodes {
+		if v == o {
+			return i
+		}
+	}
+	return Invalid
 }
 
 func (f Funct) String() string {

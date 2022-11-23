@@ -32,11 +32,18 @@ func (vm *VM) Exec(bc ByteCode) error {
 	vm.sp = uint64(len(vm.s) - 1)
 
 	var i *Inst
-	var o Opcode
 
 	for {
 		i = &bc[vm.pc]
 		switch i.O {
+
+		case Call:
+			// add return address to stack, jmp to offset
+			npc := vm.pc + 1
+			vm.s[vm.sp] = *(*[8]byte)(unsafe.Pointer(&npc))
+			vm.sp--
+			vm.pc = i.X
+			continue
 
 		case And:
 			switch i.F {
@@ -416,7 +423,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 			switch i.F {
 			case SP:
 				vm.sp++
-				vm.r[i.X] = vm.s[vm.sp]
+				vm.r[i.Y] = vm.s[vm.sp]
 			}
 
 		case Store:
@@ -492,7 +499,7 @@ func (vm *VM) Exec(bc ByteCode) error {
 			continue
 
 		default:
-			return fmt.Errorf("unhandled OP %d", o)
+			return fmt.Errorf("unhandled OP %d", i.O)
 		}
 		vm.pc++
 	}

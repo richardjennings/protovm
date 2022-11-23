@@ -1,4 +1,4 @@
-package asm
+package bc
 
 import (
 	"errors"
@@ -42,6 +42,9 @@ type (
 		z interface{}
 	}
 	R   uint64
+	F   uint64
+	B   uint64
+	SP  uint64
 	Nil [8]byte
 )
 
@@ -71,6 +74,11 @@ func (b *Builder) Add(o vm.Opcode, f vm.Funct, r ...interface{}) error {
 	}
 	b.asm = append(b.asm, l)
 	return nil
+}
+
+func (b *Builder) LabelAt(l string, line int) {
+	b.labels[l] = uint64(line)
+	b.rLabels[uint64(line)] = l
 }
 
 func (b *Builder) Label(l string) {
@@ -161,4 +169,130 @@ func (b *Builder) String() string {
 		s += fmt.Sprintf("%10d %-8v %-8v %-8v %-8v %-8v //%s\n", l, i.o, i.f, i.x, i.y, i.z, b.comments[uint64(l)])
 	}
 	return s
+}
+
+func (b *Builder) Funct(op vm.Opcode, x interface{}, y interface{}, z interface{}) (vm.Funct, error) {
+
+	// modifies inst to reflect line
+	// determines Funct from op and args
+	var funct vm.Funct
+
+	switch op {
+	case vm.NoOp:
+		funct = vm.None
+	case vm.And, vm.Or:
+		switch x.(type) {
+		case bool:
+			funct = vm.ImmB
+		case R:
+			funct = vm.Bool
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.Not:
+		funct = vm.None
+	case vm.Add, vm.Mul, vm.LT, vm.LTE, vm.GT, vm.GTE:
+		switch x.(type) {
+		case int64:
+			funct = vm.ImmI
+		case float64:
+			funct = vm.ImmF
+		case R:
+			funct = vm.Int
+		case F:
+			funct = vm.Float
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.Sub, vm.Quo, vm.Pow, vm.Rem:
+		switch x.(type) {
+		case int64:
+			funct = vm.ImmI
+		case float64:
+			funct = vm.ImmF
+		case R:
+			funct = vm.Int
+		case F:
+			funct = vm.Float
+		default:
+			return vm.None, errors.New("invalid")
+		}
+		switch y.(type) {
+		case int64:
+			funct = vm.IImm
+		case float64:
+			funct = vm.FImm
+		case R, F:
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.Eq, vm.NEq, vm.Print, vm.PrintLn:
+		switch x.(type) {
+		case int64:
+			funct = vm.ImmI
+		case float64:
+			funct = vm.ImmF
+		case bool:
+			funct = vm.ImmB
+		case R:
+			funct = vm.Int
+		case F:
+			funct = vm.Float
+		case B:
+			funct = vm.Bool
+		default:
+			return vm.None, errors.New("invalid")
+		}
+		//case vm.Print:
+		//case vm.PrintLn:
+	case vm.Load:
+		switch x.(type) {
+		case SP:
+			funct = vm.SP
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.Store:
+		switch x.(type) {
+		case uint64, int64, float64, bool:
+			funct = vm.None
+		case R:
+			switch y.(type) {
+			case SP:
+				funct = vm.SPR
+			default:
+				return vm.None, errors.New("invalid")
+			}
+			//case SPR:
+			//	Funct = vm.SPR
+			//case SP:
+			//	Funct = vm.SP
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.JMP:
+		switch x.(type) {
+		case string:
+			funct = vm.Imm
+		case SP:
+			funct = vm.SP
+		case R:
+			funct = vm.None
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.JMPEQ, vm.JMPNEQ:
+		switch y.(type) {
+		case bool:
+			funct = vm.ImmB
+		case int64:
+			funct = vm.ImmI
+		default:
+			return vm.None, errors.New("invalid")
+		}
+	case vm.Exit:
+		funct = vm.None
+
+	}
+	return funct, nil
 }

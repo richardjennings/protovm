@@ -39,7 +39,7 @@ func Test_NoOp(t *testing.T) {
 		{
 			// NoOp does nothing other than increase PC
 			ByteCode{
-				{},
+				{O: NoOp},
 				{O: Exit},
 			},
 			"",
