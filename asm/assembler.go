@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/richardjennings/protovm/vm"
-	"github.com/richardjennings/protovm/vm/bc"
+	"github.com/richardjennings/protovm/isa/proto"
 	"strconv"
 )
 
 type (
 	Assembler struct {
 		parser *Parser
-		bc     vm.ByteCode
+		bc     proto.ByteCode
 		asm    *Asm
 	}
 
@@ -59,7 +58,7 @@ func NewAssembler() *Assembler {
 	return &asm
 }
 
-func (a *Assembler) Assemble(src *bytes.Buffer) (vm.ByteCode, error) {
+func (a *Assembler) Assemble(src *bytes.Buffer) (proto.ByteCode, error) {
 	asm, err := a.Parse(src)
 	if err != nil {
 		return nil, err
@@ -71,13 +70,13 @@ func (a *Assembler) Parse(src *bytes.Buffer) (*Asm, error) {
 	return a.parser.asm, a.parser.parse(src)
 }
 
-func (a *Assembler) Compile(asm *Asm) (vm.ByteCode, error) {
-	var funct vm.Funct
+func (a *Assembler) Compile(asm *Asm) (proto.ByteCode, error) {
+	var funct proto.Funct
 	var x, y, z interface{}
 	var err error
-	var op vm.Opcode
+	var op proto.Opcode
 	a.asm = asm
-	b := bc.NewBuilder()
+	b := proto.NewBuilder()
 	for _, v := range asm.t.insts {
 		op, err = a.Op(v[0])
 		if err != nil {
@@ -112,10 +111,10 @@ func (a *Assembler) Compile(asm *Asm) (vm.ByteCode, error) {
 	return b.BC()
 }
 
-func (a *Assembler) Op(v string) (vm.Opcode, error) {
-	op := vm.GetOpcode(v)
-	if op == vm.Invalid {
-		return vm.Invalid, fmt.Errorf("invalid op %s", v)
+func (a *Assembler) Op(v string) (proto.Opcode, error) {
+	op := proto.GetOpcode(v)
+	if op == proto.Invalid {
+		return proto.Invalid, fmt.Errorf("invalid op %s", v)
 	}
 	return op, nil
 }
@@ -141,10 +140,10 @@ func (a *Assembler) Operand(v string) (interface{}, error) {
 			if err != nil {
 				return nil, fmt.Errorf("could not parse %s", v)
 			}
-			return bc.R(uint64(i)), nil
+			return proto.RV(uint64(i)), nil
 		default:
 			if v == "%sp" {
-				return bc.SP(0), nil
+				return proto.SPV(0), nil
 			}
 		}
 	case '.':
@@ -160,7 +159,7 @@ func (a *Assembler) Operand(v string) (interface{}, error) {
 		}
 		return nil, errors.New("function not found")
 	}
-	return nil, nil
+	return proto.NilV{}, nil
 }
 
 func (a *Asm) TextSection() {

@@ -1,9 +1,8 @@
-package bc
+package proto
 
 import (
 	"errors"
 	"fmt"
-	"github.com/richardjennings/protovm/vm"
 )
 
 // An easier way to construct bytecode format programmatically, with labeled jumps to negate
@@ -22,7 +21,7 @@ type (
 		labelledInsts map[string][]pos
 
 		// the ByteCode
-		bc vm.ByteCode
+		bc ByteCode
 
 		// lines
 		asm asm
@@ -35,17 +34,18 @@ type (
 
 	asm  []line
 	line struct {
-		o vm.Opcode
-		f vm.Funct
+		o Opcode
+		f Funct
 		x interface{}
 		y interface{}
 		z interface{}
 	}
-	R   uint64
-	F   uint64
-	B   uint64
-	SP  uint64
-	Nil [8]byte
+	// register, float, bool, stack pointer and none values
+	RV   uint64
+	FV   uint64
+	BV   uint64
+	SPV  uint64
+	NilV [8]byte
 )
 
 func NewBuilder() *Builder {
@@ -58,15 +58,15 @@ func NewBuilder() *Builder {
 	return &b
 }
 
-func (b *Builder) Add(o vm.Opcode, f vm.Funct, r ...interface{}) error {
+func (b *Builder) Add(o Opcode, f Funct, r ...interface{}) error {
 	var l line
 	switch len(r) {
 	case 0:
-		l = line{o, f, Nil{}, Nil{}, Nil{}}
+		l = line{o, f, NilV{}, NilV{}, NilV{}}
 	case 1:
-		l = line{o, f, r[0], Nil{}, Nil{}}
+		l = line{o, f, r[0], NilV{}, NilV{}}
 	case 2:
-		l = line{o, f, r[0], r[1], Nil{}}
+		l = line{o, f, r[0], r[1], NilV{}}
 	case 3:
 		l = line{o, f, r[0], r[1], r[2]}
 	default:
@@ -91,12 +91,12 @@ func (b *Builder) Comment(c string) {
 }
 
 func (b *Builder) Exit() {
-	b.asm = append(b.asm, line{o: vm.Exit, f: vm.None, x: Nil{}, y: Nil{}, z: Nil{}})
+	b.asm = append(b.asm, line{o: Exit, f: None, x: NilV{}, y: NilV{}, z: NilV{}})
 }
 
-func (b *Builder) BC() (vm.ByteCode, error) {
+func (b *Builder) BC() (ByteCode, error) {
 	for _, v := range b.asm {
-		inst := vm.Inst{}
+		inst := Inst{}
 		inst.O = v.o
 		inst.F = v.f
 		b.operand(v.x, &inst, 2)
@@ -119,11 +119,11 @@ func (b *Builder) BC() (vm.ByteCode, error) {
 		}
 	}
 	bc := b.bc
-	b.bc = vm.ByteCode{}
+	b.bc = ByteCode{}
 	return bc, nil
 }
 
-func (b *Builder) operand(a interface{}, inst *vm.Inst, i int) {
+func (b *Builder) operand(a interface{}, inst *Inst, i int) {
 	var prop *uint64
 	switch i {
 	case 2:
@@ -140,23 +140,23 @@ func (b *Builder) operand(a interface{}, inst *vm.Inst, i int) {
 			b.labelledInsts[a] = []pos{}
 		}
 		b.labelledInsts[a] = append(b.labelledInsts[a], pos{len(b.bc), i})
-	case R:
+	case RV:
 		*prop = uint64(a)
 	case uint64:
 		*prop = a
 	case int64:
-		*prop = vm.Int64(a)
+		*prop = Int64(a)
 	case float64:
-		*prop = vm.Float64(a)
+		*prop = Float64(a)
 	case bool:
-		*prop = vm.Boolean(a)
+		*prop = Boolean(a)
 	}
 }
 
-func (r R) String() string {
+func (r RV) String() string {
 	return fmt.Sprintf("r%d", r)
 }
-func (n Nil) String() string {
+func (n NilV) String() string {
 	return " "
 }
 
@@ -171,127 +171,127 @@ func (b *Builder) String() string {
 	return s
 }
 
-func (b *Builder) Funct(op vm.Opcode, x interface{}, y interface{}, z interface{}) (vm.Funct, error) {
+func (b *Builder) Funct(op Opcode, x interface{}, y interface{}, z interface{}) (Funct, error) {
 
 	// modifies inst to reflect line
 	// determines Funct from op and args
-	var funct vm.Funct
+	var funct Funct
 
 	switch op {
-	case vm.NoOp:
-		funct = vm.None
-	case vm.And, vm.Or:
+	case NoOp:
+		funct = None
+	case And, Or:
 		switch x.(type) {
 		case bool:
-			funct = vm.ImmB
-		case R:
-			funct = vm.Bool
+			funct = ImmB
+		case RV:
+			funct = Bool
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.Not:
-		funct = vm.None
-	case vm.Add, vm.Mul, vm.LT, vm.LTE, vm.GT, vm.GTE:
+	case Not:
+		funct = None
+	case Add, Mul, LT, LTE, GT, GTE:
 		switch x.(type) {
 		case int64:
-			funct = vm.ImmI
+			funct = ImmI
 		case float64:
-			funct = vm.ImmF
-		case R:
-			funct = vm.Int
-		case F:
-			funct = vm.Float
+			funct = ImmF
+		case RV:
+			funct = Int
+		case FV:
+			funct = Float
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.Sub, vm.Quo, vm.Pow, vm.Rem:
+	case Sub, Quo, Pow, Rem:
 		switch x.(type) {
 		case int64:
-			funct = vm.ImmI
+			funct = ImmI
 		case float64:
-			funct = vm.ImmF
-		case R:
-			funct = vm.Int
-		case F:
-			funct = vm.Float
+			funct = ImmF
+		case RV:
+			funct = Int
+		case FV:
+			funct = Float
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
 		switch y.(type) {
 		case int64:
-			funct = vm.IImm
+			funct = IImm
 		case float64:
-			funct = vm.FImm
-		case R, F:
+			funct = FImm
+		case RV, FV:
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.Eq, vm.NEq, vm.Print, vm.PrintLn:
+	case Eq, NEq, Print, PrintLn:
 		switch x.(type) {
 		case int64:
-			funct = vm.ImmI
+			funct = ImmI
 		case float64:
-			funct = vm.ImmF
+			funct = ImmF
 		case bool:
-			funct = vm.ImmB
-		case R:
-			funct = vm.Int
-		case F:
-			funct = vm.Float
-		case B:
-			funct = vm.Bool
+			funct = ImmB
+		case RV:
+			funct = Int
+		case FV:
+			funct = Float
+		case BV:
+			funct = Bool
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
 		//case vm.Print:
 		//case vm.PrintLn:
-	case vm.Load:
+	case Load:
 		switch x.(type) {
-		case SP:
-			funct = vm.SP
+		case SPV:
+			funct = SP
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.Store:
+	case Store:
 		switch x.(type) {
 		case uint64, int64, float64, bool:
-			funct = vm.None
-		case R:
+			funct = None
+		case RV:
 			switch y.(type) {
-			case SP:
-				funct = vm.SPR
+			case SPV:
+				funct = SPR
 			default:
-				return vm.None, errors.New("invalid")
+				return None, errors.New("invalid")
 			}
-			//case SPR:
+			//case SPRV:
 			//	Funct = vm.SPR
 			//case SP:
 			//	Funct = vm.SP
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.JMP:
+	case JMP:
 		switch x.(type) {
 		case string:
-			funct = vm.Imm
-		case SP:
-			funct = vm.SP
-		case R:
-			funct = vm.None
+			funct = Imm
+		case SPV:
+			funct = SP
+		case RV:
+			funct = None
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.JMPEQ, vm.JMPNEQ:
+	case JMPEQ, JMPNEQ:
 		switch y.(type) {
 		case bool:
-			funct = vm.ImmB
+			funct = ImmB
 		case int64:
-			funct = vm.ImmI
+			funct = ImmI
 		default:
-			return vm.None, errors.New("invalid")
+			return None, errors.New("invalid")
 		}
-	case vm.Exit:
-		funct = vm.None
+	case Exit:
+		funct = None
 
 	}
 	return funct, nil
