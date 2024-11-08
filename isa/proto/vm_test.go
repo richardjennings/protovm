@@ -13,14 +13,14 @@ type tcase struct {
 
 func testcase(t tcase) error {
 	buf := bytes.Buffer{}
-	vm := NewVm(&buf)
+	vm := NewVm(&buf, 100)
 	err := vm.Exec(t.bc)
 	if err != nil {
 		return err
 	}
 	out := string(buf.Bytes())
 	if out != t.o {
-		return fmt.Errorf("expected %m got %m", t.o, out)
+		return fmt.Errorf("expected %s got %s", t.o, out)
 	}
 	return nil
 }
@@ -1309,7 +1309,7 @@ func Test_JMPNEQ(t *testing.T) {
 
 func Test_UnhandledOp(t *testing.T) {
 	buf := bytes.Buffer{}
-	vm := NewVm(&buf)
+	vm := NewVm(&buf, 100)
 	err := vm.Exec(ByteCode{{O: 127}})
 	if err == nil {
 		t.Error("expected error, got none")
@@ -1369,13 +1369,13 @@ func benchmarkFibRecursive(n int, e string, b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		buf := bytes.Buffer{}
-		vm := NewVm(&buf)
+		vm := NewVm(&buf, 100)
 		err := vm.Exec(bc)
 		if err != nil {
 			b.Error(err)
 		}
 		if string(buf.Bytes()[:]) != e {
-			b.Errorf("expected %m got %m", e, string(buf.Bytes()[:]))
+			b.Errorf("expected %s got %s", e, string(buf.Bytes()[:]))
 		}
 	}
 

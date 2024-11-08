@@ -1,5 +1,11 @@
 # ProtoVM
 
+## Run a program
+
+```
+go run asm/cmd/main.go ./asm/example/proto/fib35recursive.s
+```
+
 ## About
 
 This is a register based virtual machine, instruction set and byte-code builder I wrote whilst
