@@ -23,7 +23,7 @@ func TestBuilder(t *testing.T) {
 	}
 
 	buf := bytes.Buffer{}
-	vm := NewVm(&buf)
+	vm := NewVm(&buf, 100)
 	if err := vm.Exec(bc); err != nil {
 		t.Error(err)
 	}

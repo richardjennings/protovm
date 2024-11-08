@@ -106,7 +106,7 @@ func (b *Builder) BC() (ByteCode, error) {
 	}
 	for l, positions := range b.labelledInsts {
 		if _, ok := b.labels[l]; !ok {
-			return nil, fmt.Errorf("label %m not found", l)
+			return nil, fmt.Errorf("label %s not found", l)
 		}
 		for _, pos := range positions {
 			if pos.j == 2 {
@@ -164,9 +164,9 @@ func (b *Builder) String() string {
 	var s string
 	for l, i := range b.asm {
 		if label, ok := b.rLabels[uint64(l)]; ok {
-			s += fmt.Sprintf("%m:\n", label)
+			s += fmt.Sprintf("%s:\n", label)
 		}
-		s += fmt.Sprintf("%10d %-8v %-8v %-8v %-8v %-8v //%m\n", l, i.o, i.f, i.x, i.y, i.z, b.comments[uint64(l)])
+		s += fmt.Sprintf("%10d %-8v %-8v %-8v %-8v %-8v //%s\n", l, i.o, i.f, i.x, i.y, i.z, b.comments[uint64(l)])
 	}
 	return s
 }
