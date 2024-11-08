@@ -18,7 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	vm := proto.NewVm(os.Stdout)
+	vm := proto.NewVm(os.Stdout, 100, bc)
 	if err := vm.Exec(bc); err != nil {
 		log.Fatalln(err)
 	}

@@ -70,7 +70,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	// create vm
-	vm := proto.NewVm(os.Stdout)
+	vm := proto.NewVm(os.Stdout, 100, p)
 	// execute ByteCode
 	if err := vm.Exec(p); err != nil {
 		log.Fatalln(err)

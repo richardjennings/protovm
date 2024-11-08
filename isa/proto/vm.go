@@ -16,12 +16,14 @@ type (
 )
 
 // NewVm Creates a new VM struct
-func NewVm(writer io.Writer) *VM {
-	v := &VM{w: writer, m: make(RAM, 2000)}
+func NewVm(writer io.Writer, stackSize int, bc ByteCode) *VM {
+	v := &VM{w: writer, m: make(RAM, 20000)}
 	pc := 0
-	sp := 99
 	v.r[ProgramCounter] = *(*[8]byte)(unsafe.Pointer(&pc))
+	sp := stackSize - 1
 	v.r[StackPointer] = *(*[8]byte)(unsafe.Pointer(&sp))
+	
+	// copy bc into memory
 
 	return v
 }
